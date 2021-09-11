@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "457754110758",
+    "project_id": "fir-gram-2916b",
+    "storage_bucket": "fir-gram-2916b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457754110758:android:3091902f2d87fc93836fe7",
+        "android_client_info": {
+          "package_name": "com.chipperton.demo_gram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457754110758-bbpukej8c4qja9b24127ouneu4lcl2dc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDeLMGY-sUop4vFkitjuwcKfZ5tSczPnI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457754110758-bbpukej8c4qja9b24127ouneu4lcl2dc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
