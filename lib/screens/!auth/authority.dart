@@ -5,6 +5,15 @@ class Authority extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('Authority Screen');
+    return Scaffold(
+      backgroundColor: Colors.black45,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const [
+          Text('Authority Page, Congrats!!'),
+        ],
+      ),
+    );
   }
 }

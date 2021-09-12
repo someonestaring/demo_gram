@@ -1,10 +1,41 @@
-# demo_gram
+# Demo_Gram
 
-A new Flutter project.
+A Flutter project to demostrate I am the candidate.
 
-## Getting Started
+## Workflow Outline
 
-This project is a starting point for a Flutter application.
+- AppState
+    - Decide loose data structure
+        {
+            'userData': {
+                '': '',
+                '': '',
+                '': '',
+                },
+            'miscData': {
+                '': '',
+                '': '',
+                '': '',
+                }
+            }
+- Hook up FireBase for Android && iOS
+- Splash to Login/Signup
+    - Facebook Login
+    - Authentication
+    - Initial dB propigation
+- Gesture between Faux NewsFeed && ThreadList
+- Mark up rough draft of Main pages
+    -) NewsFeed/UtilityFeed:
+        -
+    -) ThreadList:
+        -
+    --> Propigate Faux Post(s) && Threads respectively
+        -) Post:
+            -
+        -) Thread:
+            -
+- Faux Navigators/Dialogs for various IconButtons
+
 
 A few resources to get you started if this is your first Flutter project:
 

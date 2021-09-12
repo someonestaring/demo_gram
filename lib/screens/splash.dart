@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'dart:async';
 
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
@@ -78,6 +79,21 @@ class _SplashState extends State<Splash> {
     super.initState();
     _userSignIn();
     initFire();
+    _timer();
+  }
+
+  _timer() async {
+    var _duration = const Duration(seconds: 4);
+    return Timer(_duration, autoNav);
+  }
+
+  Future<void> autoNav() async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => userAuthState(),
+      ),
+    );
   }
 
   Widget userAuthState() {
@@ -90,6 +106,22 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    return const Text('Splash Screen');
+    return splish();
   }
+}
+
+Widget splish() {
+  return Scaffold(
+    backgroundColor: Colors.black45,
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: const [
+        Icon(
+          Icons.add_a_photo_outlined,
+          color: Colors.white54,
+        ),
+      ],
+    ),
+  );
 }
