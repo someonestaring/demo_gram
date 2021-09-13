@@ -11,7 +11,12 @@ class Utility extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: const [
-          Text('Utility Page, Super Congrats!!'),
+          Text(
+            'Utility Page, Super Congrats!!',
+            style: TextStyle(
+              color: Colors.white54,
+            ),
+          ),
         ],
       ),
     );

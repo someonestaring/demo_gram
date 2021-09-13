@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
 
 class Splash extends StatefulWidget {
@@ -21,21 +21,21 @@ class _SplashState extends State<Splash> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   User? user;
   bool authed = false;
-  bool _init = false;
-  bool _err = false;
+  // bool _init = false;
+  // bool _err = false;
 
-  void initFire() async {
-    try {
-      await Firebase.initializeApp();
-      setState(() {
-        _init = true;
-      });
-    } catch (e) {
-      setState(() {
-        _err = true;
-      });
-    }
-  }
+  // void initFire() async {
+  //   try {
+  //     await Firebase.initializeApp();
+  //     setState(() {
+  //       _init = true;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _err = true;
+  //     });
+  //   }
+  // }
 
   _userSignIn() async {
     user = _auth.currentUser;
@@ -78,7 +78,7 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     _userSignIn();
-    initFire();
+    // initFire();
     _timer();
   }
 
@@ -98,7 +98,7 @@ class _SplashState extends State<Splash> {
 
   Widget userAuthState() {
     if (!authed) {
-      return const Authority();
+      return Authority();
     } else {
       return const Utility();
     }
@@ -112,16 +112,25 @@ class _SplashState extends State<Splash> {
 
 Widget splish() {
   return Scaffold(
-    backgroundColor: Colors.black45,
-    body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: const [
-        Icon(
-          Icons.add_a_photo_outlined,
-          color: Colors.white54,
+      backgroundColor: Colors.black45,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            Icon(
+              Icons.photo_camera,
+              color: Colors.white54,
+              size: 62,
+            ),
+            Text(
+              'From Chipperton',
+              style: TextStyle(
+                fontSize: 32.0,
+                color: Colors.white54,
+              ),
+            )
+          ],
         ),
-      ],
-    ),
-  );
+      ));
 }

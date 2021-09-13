@@ -2,6 +2,7 @@ import 'package:demo_gram/screens/splash.dart';
 import 'package:demo_gram/state/app_state.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
+          textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
           primarySwatch: Colors.blue,
         ),
         home: const Splash(),
