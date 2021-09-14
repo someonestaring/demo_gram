@@ -40,10 +40,10 @@ class _SplashState extends State<Splash> {
   _userSignIn() async {
     user = _auth.currentUser;
     if (user != null) {
-      DocumentSnapshot _userData = await _dB
-          .collection('users')
-          .doc(_auth.currentUser!.phoneNumber)
-          .get();
+      // DocumentSnapshot _userData = await _dB
+      //     .collection('users')
+      //     .doc(_auth.currentUser!.phoneNumber)
+      //     .get();
       String? _token = await _messaging.getToken();
 
       await _dB

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 class Authority extends StatelessWidget {
   Authority({Key? key}) : super(key: key);
@@ -8,6 +10,7 @@ class Authority extends StatelessWidget {
   final TextEditingController _passCont = TextEditingController();
 
   void _logIn() async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
     print(
         'Make the shit log in you idiot: ${_numCont.text} --> ${_passCont.text}');
   }
@@ -42,17 +45,21 @@ class Authority extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   TextFormField(
+                    keyboardType: TextInputType.number,
                     controller: _numCont,
                     style: const TextStyle(color: Colors.white38),
                     decoration: InputDecoration(
+                      // prefixText: '+1',
                       filled: true,
                       fillColor: Colors.grey[800],
                       hintStyle: const TextStyle(color: Colors.white38),
                       hintText: 'Phone Number',
                     ),
                     validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.contains(RegExp('[a-zA-Z]'))) {
+                        return 'Please use only numbers';
                       }
                       return null;
                     },
@@ -64,6 +71,7 @@ class Authority extends StatelessWidget {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.grey[800],
+                      alignLabelWithHint: true,
                       hintStyle: const TextStyle(color: Colors.white38),
                       hintText: 'Password',
                       suffixIcon: const Icon(
