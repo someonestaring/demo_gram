@@ -7,17 +7,19 @@ class Utility extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black45,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Text(
-            'Utility Page, Super Congrats!!',
-            style: TextStyle(
-              color: Colors.white54,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            Text(
+              'Utility Page, Super Congrats!!',
+              style: TextStyle(
+                color: Colors.white54,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

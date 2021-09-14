@@ -115,13 +115,19 @@ Widget splish() {
       backgroundColor: Colors.black45,
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: const [
+            Spacer(
+              flex: 3,
+            ),
             Icon(
               Icons.photo_camera,
               color: Colors.white54,
               size: 62,
+            ),
+            Spacer(
+              flex: 3,
             ),
             Text(
               'From Chipperton',
