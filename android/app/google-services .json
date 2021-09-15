@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "457754110758-uco2j3qbthij57cvjo3e9u7595ptt6h1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chipperton.demo_gram",
+            "certificate_hash": "ec72f30a4533c560bb3ea40b2f6912dd99d99e96"
+          }
+        },
+        {
           "client_id": "457754110758-bbpukej8c4qja9b24127ouneu4lcl2dc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "457754110758-bbpukej8c4qja9b24127ouneu4lcl2dc.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "457754110758-kt7e44l726t3h0ulspnroeqfv91h8925.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chipperton.demoGram"
+              }
             }
           ]
         }

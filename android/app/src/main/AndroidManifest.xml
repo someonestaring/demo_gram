@@ -2,8 +2,7 @@
     package="com.example.demo_gram">
    <application
         android:label="demo_gram"
-        android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
