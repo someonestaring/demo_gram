@@ -74,10 +74,16 @@ class _AuthorityState extends State<Authority> {
       });
       UserCredential user = await _auth.signInWithCredential(_authCredential!);
       if (user.user != null) {
-        _store
-            .collection("users")
-            .doc(user.user!.phoneNumber)
-            .set({"phoneNumber": user.user!.phoneNumber});
+        _store.collection("users").doc(user.user!.phoneNumber).update({
+          "phoneNumber": user.user!.phoneNumber,
+          'lastActive': DateTime.now(),
+          'uId': user.user!.uid,
+        });
+        AppStateWidget.of(context).updateUserData({
+          'phoneNumber': user.user!.phoneNumber,
+          'lastActive': DateTime.now(),
+          'uId': user.user!.uid,
+        });
         print('User signed in, time to navigatge');
       }
     } catch (e) {
@@ -150,15 +156,17 @@ class _AuthorityState extends State<Authority> {
 
   Future<void> _continueRegistration() async {
     try {
-      var user = await _auth.signInWithCredential(_authCredential!);
+      UserCredential user = await _auth.signInWithCredential(_authCredential!);
       if (user.user != null) {
-        _store
-            .collection("users")
-            .doc(user.user!.phoneNumber)
-            .set({"phoneNumber": user.user!.phoneNumber});
+        _store.collection("users").doc(user.user!.phoneNumber).set({
+          "phoneNumber": user.user!.phoneNumber,
+          'lastActive': DateTime.now(),
+          'uId': user.user!.uid,
+        });
         AppStateWidget.of(context).updateUserData({
           'phoneNumber': user.user!.phoneNumber,
           'lastActive': DateTime.now(),
+          'uId': user.user!.uid,
         });
         print('User signed in, time to navigatge');
         Navigator.of(context).pushReplacement(
