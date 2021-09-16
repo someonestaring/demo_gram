@@ -1,3 +1,5 @@
+// import 'dart:html';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,6 +18,7 @@ class _AuthorityState extends State<Authority> {
   final TextEditingController _passCont = TextEditingController();
   final TextEditingController _smsCont = TextEditingController();
   var _verId;
+  String? _smsCode;
 
   @override
   void dispose() {
@@ -54,7 +57,10 @@ class _AuthorityState extends State<Authority> {
                             value.length != 6) {
                           return 'Please use only 6 numbers';
                         }
-                        return value;
+                        setState(() {
+                          _smsCode = value;
+                        });
+                        // return value;
                       },
                     ),
                   ],
@@ -86,32 +92,38 @@ class _AuthorityState extends State<Authority> {
         print('User is signed in!');
       }
     });
-    await _auth.verifyPhoneNumber(
-      phoneNumber: '+1${_numCont.text}',
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        String? smsCode = _showSMS(context);
-        PhoneAuthCredential credential = PhoneAuthProvider.credential(
-            verificationId: _verId, smsCode: smsCode!);
-        await _auth.signInWithCredential(credential);
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => const Utility()));
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        print('The verification failed due to: $e');
-      },
-      codeSent: (String verificationId, int? resendToken) async {
-        setState(() {
-          _verId = verificationId;
-        });
-      },
-      timeout: const Duration(seconds: 60),
+    void _veriCompleted(PhoneAuthCredential credential) async {
+      print('_veriCompleted credential: $credential');
+      await _auth.signInWithCredential(credential);
+    }
+
+    void _veriFailed(FirebaseAuthException e) {
+      print('Verification FAILURE due to: $e');
+    }
+
+    void _codeSent(String verificationId, int? resendToken) async {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: _showSMS(context)!);
+      print('_codeSent credential: $credential');
+      await _auth.signInWithCredential(credential);
+    }
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: '+${_numCont.text}',
+      verificationCompleted: _veriCompleted,
+      verificationFailed: _veriFailed,
+      codeSent: _codeSent,
       codeAutoRetrievalTimeout: (String verificationId) {},
     );
+    ConfirmationResult confirmationResult =
+        await _auth.signInWithPhoneNumber('+1${_numCont.text}');
+    UserCredential userCredential = await confirmationResult.confirm(_smsCode!);
     print('Make the shit log in you idiot: ${_numCont.text} --> ');
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       // bottomNavigationBar: ,
       backgroundColor: Colors.black38,
@@ -198,7 +210,24 @@ class _AuthorityState extends State<Authority> {
                 ],
               ),
             ),
-          )
+          ),
+          // Row(
+          //   children: const [
+          //     SizedBox(
+          //       width: size.width * 0.28,
+          //       child: DecoratedBox(
+          //         decoration: BoxDecoration(
+          //           border: Border(
+          //             bottom: BorderSide(
+          //               color: Colors.white54,
+          //               width: 2,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // )
         ],
       )),
     );

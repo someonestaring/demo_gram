@@ -98,7 +98,7 @@ class _SplashState extends State<Splash> {
 
   Widget userAuthState() {
     if (!authed) {
-      return Authority();
+      return const Authority();
     } else {
       return const Utility();
     }
