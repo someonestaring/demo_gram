@@ -1,6 +1,6 @@
-// import 'dart:html';
-
+import 'package:demo_gram/state/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/auth/utility.dart';
@@ -17,8 +17,28 @@ class _AuthorityState extends State<Authority> {
   final TextEditingController _numCont = TextEditingController();
   final TextEditingController _passCont = TextEditingController();
   final TextEditingController _smsCont = TextEditingController();
-  var _verId;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _store = FirebaseFirestore.instance;
+  PhoneAuthCredential? _authCredential;
+  String? phoneNumber;
+  bool verification = false;
+  bool isActive = false;
+  bool loading = false;
   String? _smsCode;
+  String? _verId;
+
+  @override
+  void initState() {
+    super.initState();
+    _numCont.addListener(_handleInput);
+    _auth.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -28,102 +48,154 @@ class _AuthorityState extends State<Authority> {
     super.dispose();
   }
 
-  void _logIn() async {
-    String? _showSMS(context) {
-      String? res;
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('SMS Code:'),
-              content: Form(
-                key: _smsKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      controller: _smsCont,
-                      style: const TextStyle(color: Colors.white38),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                        hintStyle: const TextStyle(color: Colors.white38),
-                        hintText: 'SMS Code',
-                      ),
-                      validator: (String? value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.contains(RegExp('[a-zA-Z]')) ||
-                            value.length != 6) {
-                          return 'Please use only 6 numbers';
-                        }
+  void _handleInput() {
+    setState(() {
+      phoneNumber = '+1${_numCont.text}';
+    });
+  }
+
+  void _codeSent(String verificationId, int? resendToken) async {
+    _showSMS(context);
+    setState(() {
+      loading = false;
+      verification = true;
+      _verId = verificationId;
+    });
+  }
+
+  void _veriFailed(FirebaseAuthException e) {
+    print('Verification FAILURE due to: $e');
+  }
+
+  void _veriCompleted(PhoneAuthCredential credential) async {
+    try {
+      setState(() {
+        _authCredential = credential;
+      });
+      UserCredential user = await _auth.signInWithCredential(_authCredential!);
+      if (user.user != null) {
+        _store
+            .collection("users")
+            .doc(user.user!.phoneNumber)
+            .set({"phoneNumber": user.user!.phoneNumber});
+        print('User signed in, time to navigatge');
+      }
+    } catch (e) {
+      print('_veriCompleted error: $e');
+    }
+  }
+
+  void _autoRetrieval(String verificationId) {
+    print('code auto-retrieval timeout --> verificationId --> $verificationId');
+  }
+
+  void _showSMS(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            elevation: 3,
+            actionsAlignment: MainAxisAlignment.center,
+            scrollable: true,
+            title: const Text('SMS Code:'),
+            content: Form(
+              key: _smsKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _smsCont,
+                    style: const TextStyle(color: Colors.white38),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[800],
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      hintText: 'SMS Code',
+                    ),
+                    validator: (String? value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.contains(RegExp('[a-zA-Z]')) ||
+                          value.length != 6) {
+                        return 'Please use only 6 numbers';
+                      } else {
                         setState(() {
                           _smsCode = value;
                         });
-                        // return value;
-                      },
-                    ),
-                  ],
-                ),
+                      }
+                    },
+                  ),
+                ],
               ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    res = _smsCont.text;
-                    print('this is the sms code user input: ${_smsCont.text}');
-                    Navigator.of(context).pop();
-                    _smsCont.clear();
-                    _numCont.clear();
-                    _passCont.clear();
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            );
-          });
-      return res;
-    }
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _smsCode = _smsCont.text;
+                  });
+                  _continueRegistration();
+                  print('this is the return string from _showSMS: $_smsCode');
+                  Navigator.of(context).pop();
+                  _smsCont.clear();
+                  _numCont.clear();
+                  _passCont.clear();
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          );
+        });
+  }
 
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    _auth.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
-      } else {
-        print('User is signed in!');
+  Future<void> _continueRegistration() async {
+    try {
+      var user = await _auth.signInWithCredential(_authCredential!);
+      if (user.user != null) {
+        _store
+            .collection("users")
+            .doc(user.user!.phoneNumber)
+            .set({"phoneNumber": user.user!.phoneNumber});
+        AppStateWidget.of(context).updateUserData({
+          'phoneNumber': user.user!.phoneNumber,
+          'lastActive': DateTime.now(),
+        });
+        print('User signed in, time to navigatge');
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => Utility()));
       }
+      setState(() {
+        loading = false;
+      });
+    } catch (e) {
+      print('Error on _continueRestistration. $e');
+    }
+  }
+
+  void _logIn() async {
+    setState(() {
+      loading = true;
     });
-    void _veriCompleted(PhoneAuthCredential credential) async {
-      print('_veriCompleted credential: $credential');
-      await _auth.signInWithCredential(credential);
+    if (!verification) {
+      await _auth.verifyPhoneNumber(
+        timeout: const Duration(seconds: 60),
+        phoneNumber: phoneNumber!,
+        verificationCompleted: _veriCompleted,
+        verificationFailed: _veriFailed,
+        codeSent: _codeSent,
+        codeAutoRetrievalTimeout: _autoRetrieval,
+      );
+    } else {
+      setState(() {
+        _authCredential = PhoneAuthProvider.credential(
+            verificationId: _verId!, smsCode: _smsCode!);
+      });
+      _continueRegistration();
     }
-
-    void _veriFailed(FirebaseAuthException e) {
-      print('Verification FAILURE due to: $e');
-    }
-
-    void _codeSent(String verificationId, int? resendToken) async {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: verificationId, smsCode: _showSMS(context)!);
-      print('_codeSent credential: $credential');
-      await _auth.signInWithCredential(credential);
-    }
-
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: '+${_numCont.text}',
-      verificationCompleted: _veriCompleted,
-      verificationFailed: _veriFailed,
-      codeSent: _codeSent,
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
-    ConfirmationResult confirmationResult =
-        await _auth.signInWithPhoneNumber('+1${_numCont.text}');
-    UserCredential userCredential = await confirmationResult.confirm(_smsCode!);
-    print('Make the shit log in you idiot: ${_numCont.text} --> ');
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       // bottomNavigationBar: ,
       backgroundColor: Colors.black38,

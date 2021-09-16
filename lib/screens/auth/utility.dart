@@ -1,23 +1,24 @@
+import 'package:demo_gram/screens/auth/ext/home.dart';
+import 'package:demo_gram/screens/auth/ext/messages.dart';
 import 'package:flutter/material.dart';
 
 class Utility extends StatelessWidget {
-  const Utility({Key? key}) : super(key: key);
+  Utility({Key? key}) : super(key: key);
+  final PageController _pageCont = PageController(
+    initialPage: 0,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black45,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: PageView(
+          physics: const BouncingScrollPhysics(),
+          controller: _pageCont,
           children: const [
-            Text(
-              'Utility Page, Super Congrats!!',
-              style: TextStyle(
-                color: Colors.white54,
-              ),
-            ),
+            HomeScreen(),
+            MessageScreen(),
           ],
         ),
       ),

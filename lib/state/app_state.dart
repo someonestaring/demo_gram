@@ -4,13 +4,13 @@ final Map initialState = {
   "dateJoined": DateTime,
   "deviceTokens": [],
   "email": '',
-  "firstName": '',
+  "firstName": 'New',
   "lastActive": DateTime,
-  "lastName": '',
+  "lastName": 'User',
   "notificationAccess": false,
   "phoneNumber": '',
   "profilePhoto": '',
-  "username": '',
+  "username": 'new_user',
 };
 
 class AppState {
@@ -49,7 +49,7 @@ class AppStateScope extends InheritedWidget {
 }
 
 class AppStateWidget extends StatefulWidget {
-  const AppStateWidget({required this.child});
+  const AppStateWidget({Key? key, required this.child}) : super(key: key);
   final Widget child;
 
   static AppStateWidgetState of(BuildContext context) {

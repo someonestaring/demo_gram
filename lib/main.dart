@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return AppStateWidget(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Demo_Gram',
         theme: ThemeData(
           textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
           primarySwatch: Colors.blue,

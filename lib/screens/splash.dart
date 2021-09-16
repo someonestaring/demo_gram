@@ -5,7 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
 
 class Splash extends StatefulWidget {
@@ -21,29 +20,12 @@ class _SplashState extends State<Splash> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   User? user;
   bool authed = false;
-  // bool _init = false;
-  // bool _err = false;
 
-  // void initFire() async {
-  //   try {
-  //     await Firebase.initializeApp();
-  //     setState(() {
-  //       _init = true;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _err = true;
-  //     });
-  //   }
-  // }
-
-  _userSignIn() async {
-    user = _auth.currentUser;
+  void _userSignIn() async {
+    setState(() {
+      user = _auth.currentUser;
+    });
     if (user != null) {
-      // DocumentSnapshot _userData = await _dB
-      //     .collection('users')
-      //     .doc(_auth.currentUser!.phoneNumber)
-      //     .get();
       String? _token = await _messaging.getToken();
 
       await _dB
@@ -100,7 +82,7 @@ class _SplashState extends State<Splash> {
     if (!authed) {
       return const Authority();
     } else {
-      return const Utility();
+      return Utility();
     }
   }
 
@@ -117,25 +99,37 @@ Widget splish() {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Spacer(
+          children: [
+            const Spacer(
               flex: 3,
             ),
-            Icon(
+            const Icon(
               Icons.photo_camera,
               color: Colors.white54,
               size: 62,
             ),
-            Spacer(
+            const Spacer(
               flex: 3,
             ),
-            Text(
-              'From Chipperton',
-              style: TextStyle(
-                fontSize: 32.0,
-                color: Colors.white54,
-              ),
-            )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [
+                Text(
+                  'From',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  'CHIPPERTON',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    color: Colors.white54,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ));
