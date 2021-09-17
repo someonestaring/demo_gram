@@ -82,7 +82,7 @@ class _SplashState extends State<Splash> {
     if (!authed) {
       return const Authority();
     } else {
-      return Utility();
+      return const Utility();
     }
   }
 

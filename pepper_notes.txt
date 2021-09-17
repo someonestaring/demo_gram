@@ -1,0 +1,3 @@
+when exiting "new post" without making a post, asks "are you shure you want to exit" vs like a discard promt --> kinda makes user feel like they are exiting the app altogether
+
+on recipe page, back button scrolls out of view, forcing user to scroll back up to exit

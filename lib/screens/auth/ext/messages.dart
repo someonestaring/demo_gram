@@ -16,7 +16,7 @@ class _MessageScreenState extends State<MessageScreen> {
           AppStateWidget.of(context).backNav();
         },
         child: const Text(
-          'Messages Bitch',
+          'Messages',
           style: TextStyle(
             color: Colors.white54,
           ),

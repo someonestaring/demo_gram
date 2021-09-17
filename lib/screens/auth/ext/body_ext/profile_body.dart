@@ -12,7 +12,7 @@ class _ProfileBodyState extends State<ProfileBody> {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Profile Body, you stupid bitch',
+        'Profile Body',
       ),
     );
   }

@@ -11,7 +11,7 @@ class _PostBodyState extends State<PostBody> {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Post Body, you stupid bitch',
+        'Post Body',
       ),
     );
   }

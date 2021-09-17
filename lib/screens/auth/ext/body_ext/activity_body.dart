@@ -12,7 +12,7 @@ class _ActivityBodyState extends State<ActivityBody> {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Activity Body, you stupid bitch',
+        'Activity Body',
       ),
     );
   }

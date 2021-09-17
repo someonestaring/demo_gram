@@ -16,7 +16,7 @@ class _HomeBodyState extends State<HomeBody> {
       scrollDirection: Axis.vertical,
       child: Column(
         children: const [
-          Text('Home Body, you stupid bitch'),
+          Text('Home Body'),
           // StreamBuilder(builder: builder),
           // StreamBuilder(builder: builder),
         ],
