@@ -5,10 +5,10 @@ import 'package:demo_gram/screens/auth/ext/body_ext/search_body.dart';
 import 'package:demo_gram/screens/auth/ext/body_ext/post_body.dart';
 import 'package:demo_gram/screens/auth/ext/body_ext/activity_body.dart';
 import 'package:demo_gram/screens/auth/ext/body_ext/profile_body.dart';
+import 'package:demo_gram/state/app_state.dart';
 
 class HomeScreen extends StatefulWidget {
-  final PageController pageCont;
-  const HomeScreen({Key? key, required this.pageCont}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    // PageController _pageCont = AppStateScope.of(context).pageCont;
 
     PreferredSizeWidget? _appBarContent() {
       return PreferredSize(
@@ -44,18 +45,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   IconButton(
-                      onPressed: () {
-                        widget.pageCont.animateTo(1,
-                            duration: const Duration(
-                              milliseconds: 500,
-                            ),
-                            curve: Curves.bounceInOut);
-                        print('message icon pressed');
-                      },
-                      icon: const Icon(
-                        Icons.near_me_outlined,
-                        color: Colors.white,
-                      ))
+                    onPressed: () {
+                      AppStateWidget.of(context).toMessages();
+                    },
+                    icon: const Icon(
+                      Icons.near_me_outlined,
+                      color: Colors.white,
+                    ),
+                  )
                 ],
               ),
             ],

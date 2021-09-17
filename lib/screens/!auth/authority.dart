@@ -156,8 +156,9 @@ class _AuthorityState extends State<Authority> {
 
   Future<void> _continueRegistration() async {
     try {
-      UserCredential user = await _auth.signInWithCredential(_authCredential!);
-      if (user.user != null) {
+      UserCredential? user = await _auth.signInWithCredential(_authCredential!);
+      var boof = user.user;
+      if (boof != null) {
         _store.collection("users").doc(user.user!.phoneNumber).set({
           "phoneNumber": user.user!.phoneNumber,
           'lastActive': DateTime.now(),

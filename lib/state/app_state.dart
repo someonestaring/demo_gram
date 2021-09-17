@@ -13,19 +13,27 @@ final Map initialState = {
   "username": 'new_user',
 };
 
+final PageController _pageCont = PageController(
+  initialPage: 0,
+);
+
 class AppState {
   AppState({
+    required this.pageCont,
     required this.userData,
     required this.miscData,
   });
+  final PageController pageCont;
   final Map userData;
   final Map miscData;
 
   AppState copyWith({
+    PageController? pageCont,
     Map? userData,
     Map? miscData,
   }) {
     return AppState(
+      pageCont: pageCont ?? this.pageCont,
       userData: userData ?? this.userData,
       miscData: miscData ?? this.miscData,
     );
@@ -62,6 +70,7 @@ class AppStateWidget extends StatefulWidget {
 
 class AppStateWidgetState extends State<AppStateWidget> {
   final AppState _data = AppState(
+    pageCont: _pageCont,
     userData: initialState,
     miscData: {},
   );
@@ -88,6 +97,26 @@ class AppStateWidgetState extends State<AppStateWidget> {
         }
       });
     });
+  }
+
+  void backNav() {
+    _pageCont.animateToPage(
+      0,
+      duration: const Duration(
+        milliseconds: 500,
+      ),
+      curve: Curves.easeIn,
+    );
+  }
+
+  void toMessages() {
+    _pageCont.animateToPage(
+      1,
+      duration: const Duration(
+        milliseconds: 500,
+      ),
+      curve: Curves.easeIn,
+    );
   }
 
   @override
