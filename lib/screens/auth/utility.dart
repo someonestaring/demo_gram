@@ -16,9 +16,13 @@ class Utility extends StatelessWidget {
         child: PageView(
           physics: const BouncingScrollPhysics(),
           controller: _pageCont,
-          children: const [
-            HomeScreen(),
-            MessageScreen(),
+          children: [
+            HomeScreen(
+              pageCont: _pageCont,
+            ),
+            MessageScreen(
+              pageCont: _pageCont,
+            ),
           ],
         ),
       ),

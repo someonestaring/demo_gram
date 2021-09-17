@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:demo_gram/screens/auth/ext/body_ext/home_body.dart';
+import 'package:demo_gram/screens/auth/ext/body_ext/search_body.dart';
+import 'package:demo_gram/screens/auth/ext/body_ext/post_body.dart';
+import 'package:demo_gram/screens/auth/ext/body_ext/activity_body.dart';
+import 'package:demo_gram/screens/auth/ext/body_ext/profile_body.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
+  final PageController pageCont;
+  const HomeScreen({Key? key, required this.pageCont}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _bodyNav = 'home';
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -38,6 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   IconButton(
                       onPressed: () {
+                        widget.pageCont.animateTo(1,
+                            duration: const Duration(
+                              milliseconds: 500,
+                            ),
+                            curve: Curves.bounceInOut);
                         print('message icon pressed');
                       },
                       icon: const Icon(
@@ -63,6 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             IconButton(
               onPressed: () {
+                setState(() {
+                  _bodyNav = 'home';
+                });
                 print('homeNavIcon Pressed');
               },
               icon: const Icon(
@@ -72,6 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                setState(() {
+                  _bodyNav = 'search';
+                });
                 print('searchNavIcon Pressed');
               },
               icon: const Icon(
@@ -81,6 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                setState(() {
+                  _bodyNav = 'post';
+                });
                 print('newPostNavIcon Pressed');
               },
               icon: const Icon(
@@ -90,6 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                setState(() {
+                  _bodyNav = 'activity';
+                });
                 print('activityNavIcon Pressed');
               },
               icon: const Icon(
@@ -99,6 +123,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
+                setState(() {
+                  _bodyNav = 'profile';
+                });
                 print('profileNavIcon Pressed');
               },
               icon: const Icon(
@@ -112,11 +139,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     Widget? _bodyContent() {
-      return const Center(
-        child: Text(
-          'body content you stupid bitch',
-        ),
-      );
+      switch (_bodyNav) {
+        case 'home':
+          return const HomeBody();
+        case 'activity':
+          return const ActivityBody();
+        case 'post':
+          return const PostBody();
+        case 'profile':
+          return const ProfileBody();
+        case 'search':
+          return const SearchBody();
+        default:
+          return const HomeBody();
+      }
     }
 
     return Scaffold(
