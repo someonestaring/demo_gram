@@ -44,15 +44,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w900),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      AppStateWidget.of(context).toMessages();
-                    },
-                    icon: const Icon(
-                      Icons.near_me_outlined,
-                      color: Colors.white,
+                  Row(children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _bodyNav = 'post';
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.control_point_sharp,
+                        color: Colors.white,
+                      ),
                     ),
-                  )
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _bodyNav = 'activity';
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.favorite_border_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        AppStateWidget.of(context).toMessages();
+                      },
+                      icon: const Icon(
+                        Icons.message_outlined,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ])
                 ],
               ),
             ],
