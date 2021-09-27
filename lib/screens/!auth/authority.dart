@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/auth/utility.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoder/geocoder.dart';
 
 class Authority extends StatefulWidget {
   const Authority({Key? key}) : super(key: key);
@@ -14,23 +16,24 @@ class Authority extends StatefulWidget {
 class _AuthorityState extends State<Authority> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _smsKey = GlobalKey<FormState>();
-  final TextEditingController _numCont = TextEditingController();
+  final TextEditingController _signInCont = TextEditingController();
   final TextEditingController _passCont = TextEditingController();
   final TextEditingController _smsCont = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _store = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   PhoneAuthCredential? _authCredential;
-  String? phoneNumber;
   bool verification = false;
   bool isActive = false;
   bool loading = false;
+  String? phoneNumber;
+  String? userEmail;
   String? _smsCode;
   String? _verId;
 
   @override
   void initState() {
     super.initState();
-    _numCont.addListener(_handleInput);
+    _signInCont.addListener(_handleInput);
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -42,16 +45,57 @@ class _AuthorityState extends State<Authority> {
 
   @override
   void dispose() {
-    _numCont.dispose();
+    _signInCont.dispose();
     _passCont.dispose();
     _smsCont.dispose();
     super.dispose();
   }
 
-  void _handleInput() {
-    setState(() {
-      phoneNumber = '+1${_numCont.text}';
-    });
+  void _handleInput() async {
+    Future<String> getCountryCode() async {
+      final Geolocator geolocator = Geolocator();
+      Future<bool> serviceEnabled;
+      LocationPermission permission;
+      serviceEnabled = geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return Future.error('Location services are disabled.');
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return Future.error('Location permissions are denied');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+      Position position = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final coordinates = Coordinates(position.latitude, position.longitude);
+      var addresses =
+          await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      var first = addresses.first;
+      return first.countryCode;
+    }
+
+    Future<String> countryCode = getCountryCode();
+    String input = _signInCont.text;
+    final bool numPatt = RegExp(r'(\d+)').hasMatch(input);
+    final bool emailPatt = RegExp(r'(\S+)@(\S+).(\w+)').hasMatch(input);
+
+    if (numPatt) {
+      setState(() {
+        phoneNumber = '$countryCode${_signInCont.text}';
+      });
+    } else if (emailPatt) {
+      setState(() {
+        userEmail = _signInCont.text;
+      });
+    }
   }
 
   void _codeSent(String verificationId, int? resendToken) async {
@@ -144,7 +188,7 @@ class _AuthorityState extends State<Authority> {
                   print('this is the return string from _showSMS: $_smsCode');
                   Navigator.of(context).pop();
                   _smsCont.clear();
-                  _numCont.clear();
+                  _signInCont.clear();
                   _passCont.clear();
                 },
                 child: const Text('Submit'),
@@ -234,20 +278,20 @@ class _AuthorityState extends State<Authority> {
                 children: <Widget>[
                   TextFormField(
                     keyboardType: TextInputType.number,
-                    controller: _numCont,
+                    controller: _signInCont,
                     style: const TextStyle(color: Colors.white38),
                     decoration: InputDecoration(
                       // prefixText: '+1',
                       filled: true,
                       fillColor: Colors.grey[800],
                       hintStyle: const TextStyle(color: Colors.white38),
-                      hintText: 'Phone Number',
+                      hintText: 'Phone Number, Email, or Username',
                     ),
                     validator: (String? value) {
                       if (value == null ||
                           value.isEmpty ||
                           value.contains(RegExp('[a-zA-Z]'))) {
-                        return 'Please use only numbers';
+                        return 'Please enter valid Phone Number, Email, or Username';
                       }
                       return null;
                     },
@@ -262,7 +306,7 @@ class _AuthorityState extends State<Authority> {
                       alignLabelWithHint: true,
                       hintStyle: const TextStyle(color: Colors.white38),
                       hintText:
-                          'Faux Password', // not set up --> condition _numCont TFF to accept emails blah blah blah
+                          'Password', // not set up --> condition _numCont TFF to accept emails blah blah blah
                       suffixIcon: const Icon(
                         Icons.visibility_off,
                         color: Colors.white38,
