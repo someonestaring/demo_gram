@@ -27,7 +27,6 @@ class _SplashState extends State<Splash> {
     });
     if (user != null) {
       String? _token = await _messaging.getToken();
-
       await _dB
           .collection('users')
           .doc(_auth.currentUser!.phoneNumber)
@@ -40,11 +39,13 @@ class _SplashState extends State<Splash> {
             return;
           } else {
             res.reference.update({
+              'lastActive': DateTime.now(),
               'tokens': FieldValue.arrayUnion([_token]),
             });
           }
         } else {
           res.reference.update({
+            'lastActive': DateTime.now(),
             'tokens': [_token]
           });
         }
@@ -60,12 +61,11 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     _userSignIn();
-    // initFire();
     _timer();
   }
 
   _timer() async {
-    var _duration = const Duration(seconds: 4);
+    var _duration = const Duration(seconds: 5);
     return Timer(_duration, autoNav);
   }
 
