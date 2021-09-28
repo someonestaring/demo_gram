@@ -1,11 +1,10 @@
+import 'dart:convert';
 import 'package:demo_gram/state/app_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/auth/utility.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
 
 class Authority extends StatefulWidget {
   const Authority({Key? key}) : super(key: key);
@@ -22,23 +21,27 @@ class _AuthorityState extends State<Authority> {
   final FirebaseFirestore _store = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   PhoneAuthCredential? _authCredential;
+  List<dynamic> _countries = [];
   bool verification = false;
   bool isActive = false;
   bool loading = false;
-  String? phoneNumber;
-  String? userEmail;
+  String? _phoneNumber;
+  String? _userEmail;
+  String? _userPassword;
   String? _smsCode;
   String? _verId;
 
   @override
   void initState() {
     super.initState();
+    _getCountries();
     _signInCont.addListener(_parseSignIn);
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
       } else {
         print('User is signed in!');
+        _navigate(context);
       }
     });
   }
@@ -51,10 +54,24 @@ class _AuthorityState extends State<Authority> {
     super.dispose();
   }
 
+  void _navigate(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (BuildContext context) => const Utility()));
+  }
+
+  Future<void> _getCountries() async {
+    String data = await DefaultAssetBundle.of(context)
+        .loadString('assets/countries/country_list.json');
+    final List<dynamic> country_list = jsonDecode(data);
+    setState(() {
+      _countries = country_list;
+    });
+  }
+
   String _parseSignIn() {
     String input = _signInCont.text;
     final bool numPatt = RegExp(r'(\d+)').hasMatch(input);
-    final bool emailPatt = RegExp(r'(\S+)@(\S+).(\w+)').hasMatch(input);
+    final bool emailPatt = RegExp(r'(\S+)@(\S+)\.(\w+)').hasMatch(input);
     List<Map<dynamic, dynamic>> _users = <Map<dynamic, dynamic>>[];
     _store.collection('users').get().then((QuerySnapshot snaps) {
       snaps.docs.forEach((doc) {
@@ -64,47 +81,24 @@ class _AuthorityState extends State<Authority> {
       });
     });
     if (_users.isNotEmpty) {
-      // handle username sign in --> if passCont == _users[0]['password'] --> login()
-      // start here
+      AppStateWidget.of(context).updateUserData(_users[0]);
+      AppStateWidget.of(context).updateUserData({'lastActive': DateTime.now()});
       return 'username';
     }
-
     if (numPatt) {
-      Future<String> getCountryCode() async {
-        Future<bool> serviceEnabled;
-        LocationPermission permission;
-        serviceEnabled = Geolocator.isLocationServiceEnabled();
-        if (serviceEnabled.toString() == 'false') {
-          return Future.error('Location services are disabled.');
-        }
-        permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.denied) {
-          permission = await Geolocator.requestPermission();
-          if (permission == LocationPermission.denied) {
-            return Future.error('Location permissions are denied');
-          }
-        }
-        if (permission == LocationPermission.deniedForever) {
-          return Future.error(
-              'Location permissions are permanently denied, we cannot request permissions.');
-        }
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        final coordinates = Coordinates(position.latitude, position.longitude);
-        var addresses =
-            await Geocoder.local.findAddressesFromCoordinates(coordinates);
-        var first = addresses.first;
-        return first.countryCode;
+      Locale _locale = Localizations.localeOf(context);
+      String? countryCode = _locale.countryCode!.toUpperCase();
+      _countries.retainWhere((item) => item['code'] == countryCode);
+      if (_countries.isNotEmpty) {
+        String numericCode = _countries[0]['dial_code'];
+        setState(() {
+          _phoneNumber = '$numericCode${_signInCont.text}';
+        });
       }
-
-      Future<String> countryCode = getCountryCode();
-      setState(() {
-        phoneNumber = '$countryCode${_signInCont.text}';
-      });
       return 'number';
     } else if (emailPatt) {
       setState(() {
-        userEmail = _signInCont.text;
+        _userEmail = _signInCont.text;
       });
       return 'email';
     } else {
@@ -219,15 +213,39 @@ class _AuthorityState extends State<Authority> {
         AppStateWidget.of(context).updateUserData({
           'lastActive': DateTime.now(),
         });
-        print('User signed in, time to navigatge');
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (BuildContext context) => Utility()));
       }
       setState(() {
         loading = false;
       });
     } catch (e) {
       print('Error on _continueRestistration. $e');
+    }
+  }
+
+  Future<void> _continueUsernameSignIn() async {
+    Map _userData = AppStateScope.of(context).userData;
+    try {
+      await _auth.signInWithEmailAndPassword(
+          email: _userData['email'], password: _userPassword!);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
+  Future<void> _continueEmailSignIn() async {
+    try {
+      await _auth.signInWithEmailAndPassword(
+          email: _userEmail!, password: _userPassword!);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
     }
   }
 
@@ -242,7 +260,7 @@ class _AuthorityState extends State<Authority> {
           if (!verification) {
             await _auth.verifyPhoneNumber(
               timeout: const Duration(seconds: 60),
-              phoneNumber: phoneNumber!,
+              phoneNumber: _phoneNumber!,
               verificationCompleted: _veriCompleted,
               verificationFailed: _veriFailed,
               codeSent: _codeSent,
@@ -256,10 +274,12 @@ class _AuthorityState extends State<Authority> {
           }
           return _continuePhoneSignIn();
         case 'username':
-          return print('parses username');
+          print('parses username');
+          return _continueUsernameSignIn();
         //handle username stuff
         case 'email':
-          return print('parses email');
+          print('parses email');
+          return _continueEmailSignIn();
       }
     } catch (e) {
       print('Error on _login: $e');
@@ -300,7 +320,6 @@ class _AuthorityState extends State<Authority> {
                     controller: _signInCont,
                     style: const TextStyle(color: Colors.white38),
                     decoration: InputDecoration(
-                      // prefixText: '+1',
                       filled: true,
                       fillColor: Colors.grey[800],
                       hintStyle: const TextStyle(color: Colors.white38),
@@ -324,17 +343,19 @@ class _AuthorityState extends State<Authority> {
                       fillColor: Colors.grey[800],
                       alignLabelWithHint: true,
                       hintStyle: const TextStyle(color: Colors.white38),
-                      hintText:
-                          'Password', // not set up --> condition _numCont TFF to accept emails blah blah blah
+                      hintText: 'Password',
                       suffixIcon: const Icon(
                         Icons.visibility_off,
                         color: Colors.white38,
                       ),
                     ),
                     validator: (String? value) {
-                      // if (value == null || value.isEmpty) {
-                      //   return 'Please enter some text';
-                      // }
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter Password';
+                      }
+                      setState(() {
+                        _userPassword = _passCont.text;
+                      });
                       return null;
                     },
                   ),
@@ -342,9 +363,9 @@ class _AuthorityState extends State<Authority> {
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        // Validate will return true if the form is valid, or false if
-                        // the form is invalid.
-                        if (_formKey.currentState!.validate()) {
+                        if (_formKey.currentState == null) {
+                          print("_formKey.currentState is null!");
+                        } else if (_formKey.currentState!.validate()) {
                           _logIn();
                         }
                       },

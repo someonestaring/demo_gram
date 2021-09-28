@@ -88,11 +88,11 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    return splish();
+    return splish(context);
   }
 }
 
-Widget splish() {
+Widget splish(BuildContext context) {
   return Scaffold(
       backgroundColor: Colors.black45,
       body: Center(
@@ -111,25 +111,29 @@ Widget splish() {
             const Spacer(
               flex: 3,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Text(
-                  'From',
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    color: Colors.white54,
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).size.height * 0.085),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: const [
+                  Text(
+                    'From',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      color: Colors.white54,
+                    ),
                   ),
-                ),
-                Text(
-                  'CHIPPERTON',
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    color: Colors.white54,
+                  Text(
+                    'CHIPPERTON',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      color: Colors.white54,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            )
           ],
         ),
       ));

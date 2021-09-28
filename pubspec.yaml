@@ -45,7 +45,7 @@ dependencies:
   google_fonts: ^2.1.0
   flutter_launcher_icons: ^0.9.2
   geolocator: ^7.6.2
-  geocoder: ^0.2.1
+  geocoding: ^2.0.1
 
 flutter_icons:
   android: true
@@ -75,8 +75,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/countries/country_list.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
