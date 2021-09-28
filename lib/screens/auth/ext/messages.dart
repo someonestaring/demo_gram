@@ -44,7 +44,7 @@ class _MessageScreenState extends State<MessageScreen> {
         child: SizedBox(
             height: size.height * 0.11,
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.black),
+              decoration: const BoxDecoration(color: Colors.black),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
