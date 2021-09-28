@@ -33,7 +33,7 @@ class _AuthorityState extends State<Authority> {
   @override
   void initState() {
     super.initState();
-    _signInCont.addListener(_handleInput);
+    _signInCont.addListener(_parseSignIn);
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -51,50 +51,64 @@ class _AuthorityState extends State<Authority> {
     super.dispose();
   }
 
-  void _handleInput() async {
-    Future<String> getCountryCode() async {
-      final Geolocator geolocator = Geolocator();
-      Future<bool> serviceEnabled;
-      LocationPermission permission;
-      serviceEnabled = geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return Future.error('Location services are disabled.');
-      }
-
-      permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return Future.error('Location permissions are denied');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
-      }
-      Position position = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      final coordinates = Coordinates(position.latitude, position.longitude);
-      var addresses =
-          await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      var first = addresses.first;
-      return first.countryCode;
-    }
-
-    Future<String> countryCode = getCountryCode();
+  String _parseSignIn() {
     String input = _signInCont.text;
     final bool numPatt = RegExp(r'(\d+)').hasMatch(input);
     final bool emailPatt = RegExp(r'(\S+)@(\S+).(\w+)').hasMatch(input);
+    List<Map<dynamic, dynamic>> _users = <Map<dynamic, dynamic>>[];
+    _store.collection('users').get().then((QuerySnapshot snaps) {
+      snaps.docs.forEach((doc) {
+        Map<dynamic, dynamic> user = doc.data() as Map<dynamic, dynamic>;
+        _users.add(user);
+        _users.retainWhere((user) => user['username'].toString() == input);
+      });
+    });
+    if (_users.isNotEmpty) {
+      // handle username sign in --> if passCont == _users[0]['password'] --> login()
+      // start here
+      return 'username';
+    }
 
     if (numPatt) {
+      Future<String> getCountryCode() async {
+        Future<bool> serviceEnabled;
+        LocationPermission permission;
+        serviceEnabled = Geolocator.isLocationServiceEnabled();
+        if (serviceEnabled.toString() == 'false') {
+          return Future.error('Location services are disabled.');
+        }
+        permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            return Future.error('Location permissions are denied');
+          }
+        }
+        if (permission == LocationPermission.deniedForever) {
+          return Future.error(
+              'Location permissions are permanently denied, we cannot request permissions.');
+        }
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        final coordinates = Coordinates(position.latitude, position.longitude);
+        var addresses =
+            await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        var first = addresses.first;
+        return first.countryCode;
+      }
+
+      Future<String> countryCode = getCountryCode();
       setState(() {
         phoneNumber = '$countryCode${_signInCont.text}';
       });
+      return 'number';
     } else if (emailPatt) {
       setState(() {
         userEmail = _signInCont.text;
       });
+      return 'email';
+    } else {
+      return 'null';
     }
   }
 
@@ -119,14 +133,10 @@ class _AuthorityState extends State<Authority> {
       UserCredential user = await _auth.signInWithCredential(_authCredential!);
       if (user.user != null) {
         _store.collection("users").doc(user.user!.phoneNumber).update({
-          "phoneNumber": user.user!.phoneNumber,
           'lastActive': DateTime.now(),
-          'uId': user.user!.uid,
         });
         AppStateWidget.of(context).updateUserData({
-          'phoneNumber': user.user!.phoneNumber,
           'lastActive': DateTime.now(),
-          'uId': user.user!.uid,
         });
         print('User signed in, time to navigatge');
       }
@@ -184,7 +194,7 @@ class _AuthorityState extends State<Authority> {
                   setState(() {
                     _smsCode = _smsCont.text;
                   });
-                  _continueRegistration();
+                  _continuePhoneSignIn();
                   print('this is the return string from _showSMS: $_smsCode');
                   Navigator.of(context).pop();
                   _smsCont.clear();
@@ -198,20 +208,16 @@ class _AuthorityState extends State<Authority> {
         });
   }
 
-  Future<void> _continueRegistration() async {
+  Future<void> _continuePhoneSignIn() async {
     try {
       UserCredential? user = await _auth.signInWithCredential(_authCredential!);
       var boof = user.user;
       if (boof != null) {
-        _store.collection("users").doc(user.user!.phoneNumber).set({
-          "phoneNumber": user.user!.phoneNumber,
+        _store.collection("users").doc(user.user!.phoneNumber).update({
           'lastActive': DateTime.now(),
-          'uId': user.user!.uid,
         });
         AppStateWidget.of(context).updateUserData({
-          'phoneNumber': user.user!.phoneNumber,
           'lastActive': DateTime.now(),
-          'uId': user.user!.uid,
         });
         print('User signed in, time to navigatge');
         Navigator.of(context).pushReplacement(
@@ -229,21 +235,34 @@ class _AuthorityState extends State<Authority> {
     setState(() {
       loading = true;
     });
-    if (!verification) {
-      await _auth.verifyPhoneNumber(
-        timeout: const Duration(seconds: 60),
-        phoneNumber: phoneNumber!,
-        verificationCompleted: _veriCompleted,
-        verificationFailed: _veriFailed,
-        codeSent: _codeSent,
-        codeAutoRetrievalTimeout: _autoRetrieval,
-      );
-    } else {
-      setState(() {
-        _authCredential = PhoneAuthProvider.credential(
-            verificationId: _verId!, smsCode: _smsCode!);
-      });
-      _continueRegistration();
+    try {
+      switch (_parseSignIn()) {
+        case 'number':
+          print('parses number');
+          if (!verification) {
+            await _auth.verifyPhoneNumber(
+              timeout: const Duration(seconds: 60),
+              phoneNumber: phoneNumber!,
+              verificationCompleted: _veriCompleted,
+              verificationFailed: _veriFailed,
+              codeSent: _codeSent,
+              codeAutoRetrievalTimeout: _autoRetrieval,
+            );
+          } else {
+            setState(() {
+              _authCredential = PhoneAuthProvider.credential(
+                  verificationId: _verId!, smsCode: _smsCode!);
+            });
+          }
+          return _continuePhoneSignIn();
+        case 'username':
+          return print('parses username');
+        //handle username stuff
+        case 'email':
+          return print('parses email');
+      }
+    } catch (e) {
+      print('Error on _login: $e');
     }
   }
 
