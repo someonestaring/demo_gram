@@ -2,6 +2,8 @@ import 'package:demo_gram/screens/!auth/ext/man_reg.dart';
 import 'package:flutter/material.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
 import 'package:flutter/widgets.dart';
+// import com.facebook.FacebookSdk;
+// import 'com.facebook.appevents.AppEventsLogger';
 
 class Authority extends StatelessWidget {
   const Authority({Key? key}) : super(key: key);
