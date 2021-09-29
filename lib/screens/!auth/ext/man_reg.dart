@@ -18,7 +18,7 @@ class _ManualRegisterState extends State<ManualRegister> {
             builder: (BuildContext context) => const Authority()));
       },
       child: const Text(
-        'Mnaual Register Page',
+        'Manual Register Page',
         style: TextStyle(
           color: Colors.white70,
         ),

@@ -106,7 +106,7 @@ Widget splish(BuildContext context) {
             const Icon(
               Icons.photo_camera,
               color: Colors.white54,
-              size: 62,
+              size: 150,
             ),
             const Spacer(
               flex: 3,
@@ -114,8 +114,8 @@ Widget splish(BuildContext context) {
             Padding(
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).size.height * 0.085),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Text(
                     'From',

@@ -1,9 +1,10 @@
 import 'package:demo_gram/screens/!auth/ext/man_reg.dart';
+import 'package:demo_gram/state/app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
 import 'package:flutter/widgets.dart';
-// import com.facebook.FacebookSdk;
-// import 'com.facebook.appevents.AppEventsLogger';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class Authority extends StatelessWidget {
   const Authority({Key? key}) : super(key: key);
@@ -44,7 +45,7 @@ class Authority extends StatelessWidget {
           style: TextStyle(color: Colors.white70),
         ),
       ),
-      preferredSize: Size(size.width, size.height * 0.015),
+      preferredSize: Size(size.width, size.height * 0.15),
     );
   }
 
@@ -53,30 +54,73 @@ class Authority extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
-            'Demo_Gram',
-            style: TextStyle(color: Colors.white70),
+          const Spacer(
+            flex: 1,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                'OR',
-                style: TextStyle(color: Colors.white70),
-              ),
-            ],
+          Text(
+            'Demo_Gram',
+            style: GoogleFonts.dancingScript(
+              textStyle: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 42.0,
+                  // wordSpacing: 0.75,
+                  fontWeight: FontWeight.w900),
+            ),
+          ),
+          const Spacer(
+            flex: 1,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await FacebookAuth.instance.login(
+                  permissions: ['public_profile', 'email']).then((value) {
+                FacebookAuth.instance.getUserData().then((data) {
+                  print(data.entries);
+                  // AppStateWidget.of(context).updateUserData({stuff: data});
+                });
+              });
+            },
+            child: const Text('Login with Facebook'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Expanded(
+                  child: Divider(
+                    color: Colors.white70,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 12, right: 12),
+                  child: Text(
+                    'OR',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ),
+                Expanded(
+                  child: Divider(
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (BuildContext context) => const ManualRegister()));
             },
-            child: const Text(
+            child: Text(
               'Sign up with email or phone number',
-              style:
-                  TextStyle(color: Colors.white70, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.blue[300], fontWeight: FontWeight.bold),
             ),
-          )
+          ),
+          const Spacer(
+            flex: 1,
+          ),
         ],
       ),
     );
