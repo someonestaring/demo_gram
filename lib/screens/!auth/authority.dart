@@ -1,5 +1,7 @@
 import 'package:demo_gram/screens/!auth/ext/man_reg.dart';
+import 'package:demo_gram/screens/auth/utility.dart';
 import 'package:demo_gram/state/app_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
@@ -41,7 +43,7 @@ class Authority extends StatelessWidget {
     return PreferredSize(
       child: const Center(
         child: Text(
-          'Country Selector',
+          'Country Selector: Handled Internally',
           style: TextStyle(color: Colors.white70),
         ),
       ),
@@ -50,6 +52,8 @@ class Authority extends StatelessWidget {
   }
 
   Widget _bodyContent(context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    Size size = MediaQuery.of(context).size;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -70,17 +74,38 @@ class Authority extends StatelessWidget {
           const Spacer(
             flex: 1,
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await FacebookAuth.instance.login(
-                  permissions: ['public_profile', 'email']).then((value) {
-                FacebookAuth.instance.getUserData().then((data) {
-                  print(data.entries);
-                  // AppStateWidget.of(context).updateUserData({stuff: data});
+          SizedBox(
+            width: size.width,
+            child: ElevatedButton(
+              onPressed: () async {
+                final LoginResult loginResult = await FacebookAuth.instance
+                    .login(
+                        permissions: ['public_profile', 'email', 'user_link']);
+                final OAuthCredential fbAuthCred =
+                    FacebookAuthProvider.credential(
+                        loginResult.accessToken!.token);
+                return _auth.signInWithCredential(fbAuthCred).then((value) {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext context) => const Utility()));
                 });
-              });
-            },
-            child: const Text('Login with Facebook'),
+                // await FacebookAuth.instance.login(permissions: [
+                //   'public_profile',
+                //   'email',
+                //   'user_link'
+                // ]).then((value) {
+                //   FacebookAuth.instance.getUserData().then((data) {
+                //     print(data);
+                //   });
+                // });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.facebook, color: Colors.white),
+                  Text('Login with Facebook')
+                ],
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 12),
@@ -136,3 +161,12 @@ class Authority extends StatelessWidget {
     );
   }
 }
+
+                    // AppStateWidget.of(context).updateUserData({
+                    //   'email': data['email'],
+                    //   'profilePhoto': data['picture']['url'],
+                    //   'firstName': data['name'].toString().split(' ')[0],
+                    //   'lastName': data['name'].toString().split(' ')[1],
+                    //   "lastActive": DateTime.now(),
+                    //   'username': data['name'],
+                    // });

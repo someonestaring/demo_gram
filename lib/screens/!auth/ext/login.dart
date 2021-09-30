@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:demo_gram/screens/auth/utility.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -55,6 +56,193 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
+  Widget _bodyContent(context) {
+    Size size = MediaQuery.of(context).size;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        const Spacer(
+          flex: 1,
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+            bottom: size.height * 0.025,
+          ),
+          child: Text(
+            'Demo_Gram',
+            style: GoogleFonts.dancingScript(
+              textStyle: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 42.0,
+                  // wordSpacing: 0.75,
+                  fontWeight: FontWeight.w900),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 20.0,
+            right: 20.0,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: size.height * 0.01,
+                  ),
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _signInCont,
+                    style: const TextStyle(color: Colors.white38),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[800],
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      hintText: 'Phone Number, Email, or Username',
+                    ),
+                    validator: (String? value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.contains(RegExp('[a-zA-Z]'))) {
+                        return 'Please enter valid Phone Number, Email, or Username';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom: size.height * 0.01,
+                  ),
+                  child: TextFormField(
+                    controller: _passCont,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white38),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[800],
+                      alignLabelWithHint: true,
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      hintText: 'Password',
+                      suffixIcon: const Icon(
+                        Icons.visibility_off,
+                        color: Colors.white38,
+                      ),
+                    ),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter Password';
+                      }
+                      setState(() {
+                        _userPassword = _passCont.text;
+                      });
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 0.0),
+                  child: SizedBox(
+                    width: size.width,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState == null) {
+                          print("_formKey.currentState is null!");
+                        } else if (_formKey.currentState!.validate()) {
+                          _logIn();
+                        }
+                      },
+                      child: const Text('Log In'),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Forgot your login details?',
+                      style: TextStyle(
+                        color: Colors.white70,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        print('Handle "Get help logging in."');
+                      },
+                      child: const Text(
+                        'Get help logging in.',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.white70,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 12, right: 12),
+                        child: Text(
+                          'OR',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await FacebookAuth.instance.login(permissions: [
+                      'public_profile',
+                      'email',
+                      'user_link'
+                    ]).then((value) {
+                      FacebookAuth.instance.getUserData().then((data) {
+                        print(data);
+                        // AppStateWidget.of(context).updateUserData({
+                        //   'email': data['email'],
+                        //   'profilePhoto': data['picture']['url'],
+                        //   'firstName': data['name'].toString().split(' ')[0],
+                        //   'lastName': data['name'].toString().split(' ')[1],
+                        //   "lastActive": DateTime.now(),
+                        //   'username': data['name'],
+                        // });
+                      });
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.facebook, color: Colors.white),
+                      Text('Login with Facebook')
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+        const Spacer(
+          flex: 1,
+        ),
+      ],
+    );
+  }
+
   Widget _bottomNav(context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +265,7 @@ class _LoginState extends State<Login> {
               fontWeight: FontWeight.bold,
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -318,111 +506,10 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: _bottomNav(context),
-      backgroundColor: Colors.black38,
+      backgroundColor: Colors.black,
       body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Demo_Gram',
-            style: GoogleFonts.dancingScript(
-              textStyle: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 42.0,
-                  // wordSpacing: 0.75,
-                  fontWeight: FontWeight.w900),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    keyboardType: TextInputType.number,
-                    controller: _signInCont,
-                    style: const TextStyle(color: Colors.white38),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      hintText: 'Phone Number, Email, or Username',
-                    ),
-                    validator: (String? value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.contains(RegExp('[a-zA-Z]'))) {
-                        return 'Please enter valid Phone Number, Email, or Username';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _passCont,
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white38),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      alignLabelWithHint: true,
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      hintText: 'Password',
-                      suffixIcon: const Icon(
-                        Icons.visibility_off,
-                        color: Colors.white38,
-                      ),
-                    ),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Password';
-                      }
-                      setState(() {
-                        _userPassword = _passCont.text;
-                      });
-                      return null;
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState == null) {
-                          print("_formKey.currentState is null!");
-                        } else if (_formKey.currentState!.validate()) {
-                          _logIn();
-                        }
-                      },
-                      child: const Text('Log In'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Row(
-          //   children: const [
-          //     SizedBox(
-          //       width: size.width * 0.28,
-          //       child: DecoratedBox(
-          //         decoration: BoxDecoration(
-          //           border: Border(
-          //             bottom: BorderSide(
-          //               color: Colors.white54,
-          //               width: 2,
-          //             ),
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // )
-        ],
-      )),
+        child: _bodyContent(context),
+      ),
     );
   }
 }
