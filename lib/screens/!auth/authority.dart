@@ -153,6 +153,7 @@ class Authority extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: _appBar(context),
       backgroundColor: Colors.black,
