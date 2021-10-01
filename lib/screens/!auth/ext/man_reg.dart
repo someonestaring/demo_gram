@@ -41,73 +41,99 @@ class _ManualRegisterState extends State<ManualRegister> {
 
   Widget _bodyContent(context) {
     Size size = MediaQuery.of(context).size;
-    return !_methodType
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: size.width,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _methodType = !_methodType;
-                    });
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text('Email/Phone ??'),
-                    ],
-                  ),
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Icon(
+          Icons.account_circle_outlined,
+          color: Colors.white70,
+          size: 172,
+        ),
+        Row(
+          children: const [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                border:
+                    Border(bottom: BorderSide()), //EdgeInsets.only(bottom: 1),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => const Authority()));
-                },
-                child: const Text(
-                  'Phone Register Page',
-                  style: TextStyle(
-                    color: Colors.white70,
-                  ),
-                ),
+              child: Text(
+                'Phone',
+                style: TextStyle(),
               ),
-            ],
-          )
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: size.width,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _methodType = !_methodType;
-                    });
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text('Email/Phone ??'),
-                    ],
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => const Authority()));
-                },
-                child: const Text(
-                  'Email Register Page',
-                  style: TextStyle(
-                    color: Colors.white70,
-                  ),
-                ),
-              ),
-            ],
-          );
+            ),
+          ],
+        ),
+      ],
+    );
+    // !_methodType
+    //     ? Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         children: [
+    //           SizedBox(
+    //             width: size.width,
+    //             child: ElevatedButton(
+    //               onPressed: () {
+    //                 setState(() {
+    //                   _methodType = !_methodType;
+    //                 });
+    //               },
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: const [
+    //                   Text('Email/Phone ??'),
+    //                 ],
+    //               ),
+    //             ),
+    //           ),
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //                   builder: (BuildContext context) => const Authority()));
+    //             },
+    //             child: const Text(
+    //               'Phone Register Page',
+    //               style: TextStyle(
+    //                 color: Colors.white70,
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       )
+    //     : Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         children: [
+    //           SizedBox(
+    //             width: size.width,
+    //             child: ElevatedButton(
+    //               onPressed: () {
+    //                 setState(() {
+    //                   _methodType = !_methodType;
+    //                 });
+    //               },
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: const [
+    //                   Text('Email/Phone ??'),
+    //                 ],
+    //               ),
+    //             ),
+    //           ),
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //                   builder: (BuildContext context) => const Authority()));
+    //             },
+    //             child: const Text(
+    //               'Email Register Page',
+    //               style: TextStyle(
+    //                 color: Colors.white70,
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       );
   }
 
   @override
