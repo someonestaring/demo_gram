@@ -21,6 +21,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
           primarySwatch: Colors.blue,
+          unselectedWidgetColor: Colors.white70,
+          buttonTheme: const ButtonThemeData(
+            disabledColor: Colors.red,
+          ),
         ),
         home: const Splash(),
       ),

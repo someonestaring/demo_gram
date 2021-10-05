@@ -4,6 +4,7 @@ import 'package:demo_gram/screens/!auth/authority.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
 import 'package:demo_gram/state/app_state.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class ManualRegister extends StatefulWidget {
   const ManualRegister({Key? key}) : super(key: key);
@@ -13,14 +14,40 @@ class ManualRegister extends StatefulWidget {
 }
 
 class _ManualRegisterState extends State<ManualRegister> {
-  final GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneCont = TextEditingController();
   final TextEditingController _emailCont = TextEditingController();
+  List<dynamic> _countries = [];
   bool _methodType = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _getCountries();
+  }
+
+  @override
+  void dispose() {
+    _phoneCont.dispose();
+    _emailCont.dispose();
+    super.dispose();
+  }
+
+  Future<void> _getCountries() async {
+    String data = await DefaultAssetBundle.of(context)
+        .loadString('assets/countries/country_list.json');
+    final List<dynamic> country_list = jsonDecode(data);
+    setState(() {
+      _countries = country_list;
+    });
+  }
+
   void _phoneNext(context) {
-    AppStateWidget.of(context).updateUserData({'phoneNumber': _phoneCont.text});
+    Locale _locale = Localizations.localeOf(context);
+    String? countryCode = _locale.countryCode!.toUpperCase();
+    _countries.retainWhere((item) => item['code'] == countryCode);
+    AppStateWidget.of(context)
+        .updateUserData({'phoneNumber': '$countryCode${_phoneCont.text}'});
     Navigator.of(context).push(
         MaterialPageRoute(builder: (BuildContext context) => const Next()));
   }
@@ -146,77 +173,70 @@ class _ManualRegisterState extends State<ManualRegister> {
             ],
           ),
         ),
-        !_methodType
-            ? Form(
-                key: _phoneKey,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    alignLabelWithHint: true,
-                    hintStyle: const TextStyle(color: Colors.white38),
-                    hintText: 'Password',
-                    suffixIcon: const Icon(
-                      Icons.visibility_off,
-                      color: Colors.white38,
-                    ),
-                  ),
-                  controller: _phoneCont,
-                  validator: (value) {
-                    if (value != null) {
-                      return null;
-                    } else {
-                      print('Phone Field not valid');
-                    }
-                  },
+        Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey[800],
+                  alignLabelWithHint: true,
+                  hintStyle: const TextStyle(color: Colors.white38),
+                  hintText: !_methodType ? 'Phone Number' : 'Email',
                 ),
-              )
-            : Form(
-                key: _emailKey,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[800],
-                    alignLabelWithHint: true,
-                    hintStyle: const TextStyle(color: Colors.white38),
-                    hintText: 'Password',
-                    suffixIcon: const Icon(
-                      Icons.visibility_off,
-                      color: Colors.white38,
-                    ),
-                  ),
-                  controller: _emailCont,
-                  validator: (value) {
-                    if (value != null) {
-                      return null;
-                    } else {
-                      print('Email Field not valid');
-                    }
-                  },
+                controller: !_methodType ? _phoneCont : _emailCont,
+                validator: !_methodType
+                    ? (String? value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.contains(RegExp(r'(\D+)'))) {
+                          return 'Phone Field not valid';
+                        } else {
+                          return null;
+                        }
+                      }
+                    : (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Email Field not valid';
+                        } else {
+                          return null;
+                        }
+                      },
+                keyboardType: !_methodType
+                    ? TextInputType.phone
+                    : TextInputType.emailAddress,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                child: Text(
+                  !_methodType
+                      ? 'You may recieve SMS updates from Demo_Gram and can opt out at any time.'
+                      : '',
+                  style: const TextStyle(color: Colors.white54),
+                  textAlign: TextAlign.center,
                 ),
               ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
-          child: Text(
-            !_methodType
-                ? 'You may recieve SMS updates from Demo_Gram and can opt out at any time.'
-                : '',
-            style: const TextStyle(color: Colors.white54),
-            textAlign: TextAlign.center,
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      child: const Text('Next'),
+                      onPressed: () {
+                        if (_formKey.currentState == null) {
+                          print("_formKey.currentState is null!");
+                        } else if (_formKey.currentState!.validate()) {
+                          !_methodType
+                              ? _phoneNext(context)
+                              : _emailNext(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                child: const Text('Next'),
-                onPressed: () {
-                  print("Handle Form Stuff");
-                  !_methodType ? _phoneNext(context) : _emailNext(context);
-                },
-              ),
-            ),
-          ],
         ),
         Padding(
           padding: const EdgeInsets.only(top: 12),

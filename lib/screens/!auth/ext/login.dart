@@ -87,13 +87,12 @@ class _LoginState extends State<Login> {
           child: Form(
             key: _formKey,
             child: Column(
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: EdgeInsets.only(
                     bottom: size.height * 0.01,
                   ),
                   child: TextFormField(
-                    keyboardType: TextInputType.number,
                     controller: _signInCont,
                     style: const TextStyle(color: Colors.white38),
                     decoration: InputDecoration(
@@ -103,9 +102,7 @@ class _LoginState extends State<Login> {
                       hintText: 'Phone Number, Email, or Username',
                     ),
                     validator: (String? value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.contains(RegExp('[a-zA-Z]'))) {
+                      if (value == null || value.isEmpty) {
                         return 'Please enter valid Phone Number, Email, or Username';
                       }
                       return null;

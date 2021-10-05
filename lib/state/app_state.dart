@@ -7,10 +7,12 @@ final Map initialState = {
   "firstName": 'New',
   "lastActive": DateTime,
   "lastName": 'User',
+  'fullName': 'New User',
   "notificationAccess": false,
   "phoneNumber": '',
   "profilePhoto": '',
   "username": 'new_user',
+  'birthday': DateTime,
 };
 
 final PageController _pageCont = PageController(
