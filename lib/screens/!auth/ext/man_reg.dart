@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:demo_gram/screens/!auth/authority.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
+import 'package:demo_gram/state/app_state.dart';
 import 'package:flutter/material.dart';
 
 class ManualRegister extends StatefulWidget {
@@ -12,7 +13,23 @@ class ManualRegister extends StatefulWidget {
 }
 
 class _ManualRegisterState extends State<ManualRegister> {
+  final GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
+  final TextEditingController _phoneCont = TextEditingController();
+  final TextEditingController _emailCont = TextEditingController();
   bool _methodType = false;
+
+  void _phoneNext(context) {
+    AppStateWidget.of(context).updateUserData({'phoneNumber': _phoneCont.text});
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) => const Next()));
+  }
+
+  void _emailNext(context) {
+    AppStateWidget.of(context).updateUserData({'email': _phoneCont.text});
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) => const Next()));
+  }
 
   Widget _bottomNav(context) {
     return Row(
@@ -42,10 +59,6 @@ class _ManualRegisterState extends State<ManualRegister> {
   }
 
   Widget _bodyContent(context) {
-    final GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
-    final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
-    final TextEditingController _phoneCont = TextEditingController();
-    final TextEditingController _emailCont = TextEditingController();
     Size size = MediaQuery.of(context).size;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -199,6 +212,7 @@ class _ManualRegisterState extends State<ManualRegister> {
                 child: const Text('Next'),
                 onPressed: () {
                   print("Handle Form Stuff");
+                  !_methodType ? _phoneNext(context) : _emailNext(context);
                 },
               ),
             ),
