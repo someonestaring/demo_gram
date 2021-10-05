@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:demo_gram/screens/!auth/ext/next.dart';
 import 'package:demo_gram/screens/!auth/authority.dart';
 import 'package:demo_gram/screens/!auth/ext/login.dart';
 import 'package:demo_gram/state/app_state.dart';
