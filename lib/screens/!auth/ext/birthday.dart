@@ -68,8 +68,6 @@ class _BirthdayState extends State<Birthday> {
     var bDay =
         DateFormat('M/d/yyyy').parse('${selectedMonth['number']}/$day/$year');
     var age = _date.difference(bDay).inDays / 365;
-    print('BEEERRRRRFFFFFDAY -----> $bDay');
-    // print('probably not going to work: age -----> ${age.inDays / 365}');
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
       child: Container(
@@ -109,7 +107,6 @@ class _BirthdayState extends State<Birthday> {
   Widget _bodyContent(context) {
     Size size = MediaQuery.of(context).size;
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text(
           'Add Your Birthday',
@@ -132,7 +129,6 @@ class _BirthdayState extends State<Birthday> {
         _birthdayBox(context),
         const Spacer(),
         SizedBox(
-          // height: size.height * 0.15,
           width: size.width,
           child: ElevatedButton(
             onPressed: () {},
@@ -150,7 +146,6 @@ class _BirthdayState extends State<Birthday> {
     Size size = MediaQuery.of(context).size;
     final List<Widget> _names = <Widget>[];
     _months.forEach((k, v) {
-      // String text = v['name'];
       _names.add(Text(
         v['name'],
         style: const TextStyle(color: Colors.white70),
@@ -174,7 +169,7 @@ class _BirthdayState extends State<Birthday> {
                         ));
               });
             },
-            physics: const BouncingScrollPhysics(),
+            physics: const FixedExtentScrollPhysics(),
             magnification: 1.5,
             useMagnifier: true,
             diameterRatio: 0.75,
@@ -192,7 +187,7 @@ class _BirthdayState extends State<Birthday> {
           height: size.height * 0.25,
           width: size.width * 0.25,
           child: ListWheelScrollView(
-            physics: const BouncingScrollPhysics(),
+            physics: const FixedExtentScrollPhysics(),
             magnification: 1.5,
             useMagnifier: true,
             diameterRatio: 0.75,
@@ -215,7 +210,7 @@ class _BirthdayState extends State<Birthday> {
           height: size.height * 0.25,
           width: size.width * 0.25,
           child: ListWheelScrollView(
-            physics: const BouncingScrollPhysics(),
+            physics: const FixedExtentScrollPhysics(),
             magnification: 1.5,
             useMagnifier: true,
             diameterRatio: 0.75,
