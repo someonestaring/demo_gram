@@ -87,222 +87,221 @@ class _ManualRegisterState extends State<ManualRegister> {
 
   Widget _bodyContent(context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const CircleAvatar(
-          radius: 85,
-          child: Icon(
-            Icons.account_circle_outlined,
-            color: Colors.white70,
-            size: 172,
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: size.width * 0.02,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CircleAvatar(
+            radius: 85,
+            child: Icon(
+              Icons.account_circle_outlined,
+              color: Colors.white70,
+              size: 172,
+            ),
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(bottom: size.height * 0.02),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border(
-                      bottom: !_methodType
-                          ? const BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            )
-                          : const BorderSide(
-                              color: Colors.white70,
-                              width: 1,
-                            ),
-                    ), //EdgeInsets.only(bottom: 1),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _methodType = false;
-                      });
-                    },
-                    child: Text(
-                      'Phone',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: !_methodType ? Colors.white : Colors.white70,
-                        fontSize: 24,
-                      ),
+          Padding(
+            padding: EdgeInsets.only(bottom: size.height * 0.02),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border(
+                        bottom: !_methodType
+                            ? const BorderSide(
+                                color: Colors.white,
+                                width: 2,
+                              )
+                            : const BorderSide(
+                                color: Colors.white70,
+                                width: 1,
+                              ),
+                      ), //EdgeInsets.only(bottom: 1),
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border(
-                      bottom: !_methodType
-                          ? const BorderSide(
-                              color: Colors.white70,
-                              width: 1,
-                            )
-                          : const BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                    ), //EdgeInsets.only(bottom: 1),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _methodType = true;
-                      });
-                    },
-                    child: Text(
-                      'Email',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: !_methodType ? Colors.white70 : Colors.white,
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[800],
-                  alignLabelWithHint: true,
-                  hintStyle: const TextStyle(color: Colors.white38),
-                  hintText: !_methodType ? 'Phone Number' : 'Email',
-                ),
-                controller: !_methodType ? _phoneCont : _emailCont,
-                validator: !_methodType
-                    ? (String? value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.contains(RegExp(r'(\D+)'))) {
-                          return 'Phone Field not valid';
-                        } else {
-                          return null;
-                        }
-                      }
-                    : (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Email Field not valid';
-                        } else {
-                          return null;
-                        }
-                      },
-                keyboardType: !_methodType
-                    ? TextInputType.phone
-                    : TextInputType.emailAddress,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
-                child: Text(
-                  !_methodType
-                      ? 'You may recieve SMS updates from Demo_Gram and can opt out at any time.'
-                      : '',
-                  style: const TextStyle(color: Colors.white54),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      child: const Text('Next'),
+                    child: TextButton(
                       onPressed: () {
-                        if (_formKey.currentState == null) {
-                          print("_formKey.currentState is null!");
-                        } else if (_formKey.currentState!.validate()) {
-                          !_methodType
-                              ? _phoneNext(context)
-                              : _emailNext(context);
-                        }
+                        setState(() {
+                          _methodType = false;
+                        });
                       },
+                      child: Text(
+                        'Phone',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: !_methodType ? Colors.white : Colors.white70,
+                          fontSize: 24,
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Expanded(
-                child: Divider(
-                  color: Colors.white70,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 12, right: 12),
-                child: Text(
-                  'OR',
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ),
-              Expanded(
-                child: Divider(
-                  color: Colors.white70,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: size.height * 0.02),
-          child: OutlinedButton(
-            style: ButtonStyle(
-                side: MaterialStateProperty.all(const BorderSide(
-                    color: Colors.white70,
-                    width: 1.0,
-                    style: BorderStyle.solid))),
-            onPressed: () {},
-            child: Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.facebook,
+                Expanded(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border(
+                        bottom: !_methodType
+                            ? const BorderSide(
+                                color: Colors.white70,
+                                width: 1,
+                              )
+                            : const BorderSide(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                      ), //EdgeInsets.only(bottom: 1),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _methodType = true;
+                        });
+                      },
+                      child: Text(
+                        'Email',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: !_methodType ? Colors.white70 : Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
                   ),
-                  Text(
-                    'Continue with Facebook',
-                    style: TextStyle(color: Colors.white),
-                  )
-                ],
+                ),
+              ],
+            ),
+          ),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey[800],
+                    alignLabelWithHint: true,
+                    hintStyle: const TextStyle(color: Colors.white38),
+                    hintText: !_methodType ? 'Phone Number' : 'Email',
+                  ),
+                  controller: !_methodType ? _phoneCont : _emailCont,
+                  validator: !_methodType
+                      ? (String? value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.contains(RegExp(r'(\D+)'))) {
+                            return 'Phone Field not valid';
+                          } else {
+                            return null;
+                          }
+                        }
+                      : (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email Field not valid';
+                          } else {
+                            return null;
+                          }
+                        },
+                  keyboardType: !_methodType
+                      ? TextInputType.phone
+                      : TextInputType.emailAddress,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                  child: Text(
+                    !_methodType
+                        ? 'You may recieve SMS updates from Demo_Gram and can opt out at any time.'
+                        : '',
+                    style: const TextStyle(color: Colors.white54),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        child: const Text('Next'),
+                        onPressed: () {
+                          if (_formKey.currentState == null) {
+                            print("_formKey.currentState is null!");
+                          } else if (_formKey.currentState!.validate()) {
+                            !_methodType
+                                ? _phoneNext(context)
+                                : _emailNext(context);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Expanded(
+                  child: Divider(
+                    color: Colors.white70,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 12, right: 12),
+                  child: Text(
+                    'OR',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ),
+                Expanded(
+                  child: Divider(
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.height * 0.02),
+            child: OutlinedButton(
+              style: ButtonStyle(
+                  side: MaterialStateProperty.all(const BorderSide(
+                      color: Colors.white70,
+                      width: 1.0,
+                      style: BorderStyle.solid))),
+              onPressed: () {},
+              child: Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.facebook,
+                    ),
+                    Text(
+                      'Continue with Facebook',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: size.width * 0.02,
-        ),
-        child: _bodyContent(context),
-      ),
+      body: _bodyContent(context),
       bottomNavigationBar: _bottomNav(context),
     );
   }
