@@ -29,7 +29,7 @@ class _SplashState extends State<Splash> {
       String? _token = await _messaging.getToken();
       await _dB
           .collection('users')
-          .doc(_auth.currentUser!.phoneNumber)
+          .doc(_auth.currentUser!.uid)
           .get()
           .then((res) {
         Map<String, dynamic>? data = res.data();

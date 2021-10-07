@@ -28,8 +28,8 @@ class _LoginState extends State<Login> {
   bool isActive = false;
   bool loading = false;
   String? _phoneNumber;
-  String? _userEmail;
-  String? _userPassword;
+  String _userEmail = '';
+  String _userPassword = '';
   String? _smsCode;
   String? _verId;
 
@@ -210,14 +210,14 @@ class _LoginState extends State<Login> {
                     ]).then((value) {
                       FacebookAuth.instance.getUserData().then((data) {
                         print(data);
-                        // AppStateWidget.of(context).updateUserData({
-                        //   'email': data['email'],
-                        //   'profilePhoto': data['picture']['url'],
-                        //   'firstName': data['name'].toString().split(' ')[0],
-                        //   'lastName': data['name'].toString().split(' ')[1],
-                        //   "lastActive": DateTime.now(),
-                        //   'username': data['name'],
-                        // });
+                        AppStateWidget.of(context).updateUserData({
+                          'email': data['email'],
+                          'profilePhoto': data['picture']['url'],
+                          'firstName': data['name'].toString().split(' ')[0],
+                          'lastName': data['name'].toString().split(' ')[1],
+                          "lastActive": DateTime.now(),
+                          'username': data['name'],
+                        });
                       });
                     });
                   },
@@ -285,10 +285,10 @@ class _LoginState extends State<Login> {
     String input = _signInCont.text;
     final bool numPatt = RegExp(r'(\d+)').hasMatch(input);
     final bool emailPatt = RegExp(r'(\S+)@(\S+)\.(\w+)').hasMatch(input);
-    List<Map<dynamic, dynamic>> _users = <Map<dynamic, dynamic>>[];
+    List<Map<String, dynamic>> _users = <Map<String, dynamic>>[];
     _store.collection('users').get().then((QuerySnapshot snaps) {
       snaps.docs.forEach((doc) {
-        Map<dynamic, dynamic> user = doc.data() as Map<dynamic, dynamic>;
+        Map<String, dynamic> user = doc.data() as Map<String, dynamic>;
         _users.add(user);
         _users.retainWhere((user) => user['username'].toString() == input);
       });
@@ -418,9 +418,9 @@ class _LoginState extends State<Login> {
   Future<void> _continuePhoneSignIn() async {
     try {
       UserCredential? user = await _auth.signInWithCredential(_authCredential!);
-      var boof = user.user;
-      if (boof != null) {
-        _store.collection("users").doc(user.user!.phoneNumber).update({
+      var checker = user.user;
+      if (checker != null) {
+        _store.collection("users").doc(user.user!.uid).update({
           'lastActive': DateTime.now(),
         });
         AppStateWidget.of(context).updateUserData({
@@ -438,8 +438,19 @@ class _LoginState extends State<Login> {
   Future<void> _continueUsernameSignIn() async {
     Map _userData = AppStateScope.of(context).userData;
     try {
-      await _auth.signInWithEmailAndPassword(
-          email: _userData['email'], password: _userPassword!);
+      UserCredential? user = await _auth.signInWithCredential(_authCredential!);
+      var checker = user.user;
+
+      if (checker != null) {
+        await _auth.signInWithEmailAndPassword(
+            email: _userData['email'], password: _userPassword);
+        await _store.collection("users").doc(user.user!.uid).update({
+          'lastActive': DateTime.now(),
+        });
+      }
+      setState(() {
+        loading = false;
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -450,9 +461,18 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _continueEmailSignIn() async {
+    // Map _userData = AppStateScope.of(context).userData;
     try {
-      await _auth.signInWithEmailAndPassword(
-          email: _userEmail!, password: _userPassword!);
+      UserCredential user = await _auth.signInWithEmailAndPassword(
+          email: _userEmail, password: _userPassword);
+      var checker = user.user;
+      if (checker != null) {
+        await _auth.signInWithEmailAndPassword(
+            email: _userEmail, password: _userPassword);
+        await _store.collection("users").doc(user.user!.uid).update({
+          'lastActive': DateTime.now(),
+        });
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');

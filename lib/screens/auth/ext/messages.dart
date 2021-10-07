@@ -38,6 +38,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
   PreferredSizeWidget _appBar(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
+    Map _userData = AppStateScope.of(context).userData;
 
     return PreferredSize(
         preferredSize: Size.fromHeight(size.height * 0.15),
@@ -60,9 +61,9 @@ class _MessageScreenState extends State<MessageScreen> {
                           color: Colors.white70,
                         ),
                       ),
-                      const Text(
-                        'UserName',
-                        style: TextStyle(color: Colors.white70),
+                      Text(
+                        "${_userData['username']}",
+                        style: const TextStyle(color: Colors.white70),
                       ),
                     ],
                   ),

@@ -1,3 +1,5 @@
+import 'package:demo_gram/screens/!auth/ext/username.dart';
+import 'package:demo_gram/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:demo_gram/screens/!auth/ext/birth_ext.dart';
 import 'package:intl/intl.dart';
@@ -25,7 +27,6 @@ class _BirthdayState extends State<Birthday> {
     10: {'name': 'November', 'short': 'Nov', 'number': 11, 'days': 30},
     11: {'name': 'December', 'short': 'Dec', 'number': 12, 'days': 31}
   };
-  List<Widget> days = <Widget>[];
   int day = 1;
   int year = 2020;
   Map selectedMonth = {
@@ -44,201 +45,211 @@ class _BirthdayState extends State<Birthday> {
     super.dispose();
   }
 
-  PreferredSizeWidget _appBar(context) {
-    Size size = MediaQuery.of(context).size;
-    return PreferredSize(
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(
-              Icons.cake_outlined,
-              color: Colors.white,
-              size: 64,
-            ),
-          ],
-        ),
-      ),
-      preferredSize: Size(size.width, size.height * 0.15),
-    );
-  }
-
-  Widget _birthdayBox(context) {
-    Size size = MediaQuery.of(context).size;
-    var bDay =
-        DateFormat('M/d/yyyy').parse('${selectedMonth['number']}/$day/$year');
-    var age = _date.difference(bDay).inDays / 365;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: const BorderRadius.all(Radius.circular(4)),
-        ),
-        height: size.height * 0.05,
-        width: size.width * 0.9,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Text(
-                '${selectedMonth['name']} $day, $year',
-                style: const TextStyle(
-                  color: Colors.white54,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 15),
-              child: Text(
-                "You are ${age.floor()} years old.",
-                style: const TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _bodyContent(context) {
-    Size size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        const Text(
-          'Add Your Birthday',
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    const BirthdayExplanation()));
-          },
-          child: const Text(
-            "This won't be part of your public profile. \n Why do I need to provide my birthday?",
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        _birthdayBox(context),
-        const Spacer(),
-        SizedBox(
-          width: size.width,
-          child: ElevatedButton(
-            onPressed: () {},
-            child: const Text(
-              'Next',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _bottomNav(context) {
-    Size size = MediaQuery.of(context).size;
-    final List<Widget> _names = <Widget>[];
-    _months.forEach((k, v) {
-      _names.add(Text(
-        v['name'],
-        style: const TextStyle(color: Colors.white70),
-      ));
-    });
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: size.height * 0.25,
-          width: size.width * 0.25,
-          child: ListWheelScrollView(
-            onSelectedItemChanged: (item) {
-              setState(() {
-                selectedMonth = _months[item];
-                days = List.generate(
-                    selectedMonth['days'],
-                    (index) => Text(
-                          '${index + 1}',
-                          style: const TextStyle(color: Colors.white70),
-                        ));
-              });
-            },
-            physics: const FixedExtentScrollPhysics(),
-            magnification: 1.5,
-            useMagnifier: true,
-            diameterRatio: 0.75,
-            itemExtent: size.height * 0.025,
-            children: _names,
-          ),
-        ),
-        SizedBox(
-          height: size.height * 0.1,
-          child: const VerticalDivider(
-            color: Colors.white70,
-          ),
-        ),
-        SizedBox(
-          height: size.height * 0.25,
-          width: size.width * 0.25,
-          child: ListWheelScrollView(
-            physics: const FixedExtentScrollPhysics(),
-            magnification: 1.5,
-            useMagnifier: true,
-            diameterRatio: 0.75,
-            itemExtent: size.height * 0.025,
-            children: days,
-            onSelectedItemChanged: (item) {
-              setState(() {
-                day = item + 1;
-              });
-            },
-          ),
-        ),
-        SizedBox(
-          height: size.height * 0.1,
-          child: const VerticalDivider(
-            color: Colors.white70,
-          ),
-        ),
-        SizedBox(
-          height: size.height * 0.25,
-          width: size.width * 0.25,
-          child: ListWheelScrollView(
-            physics: const FixedExtentScrollPhysics(),
-            magnification: 1.5,
-            useMagnifier: true,
-            diameterRatio: 0.75,
-            itemExtent: size.height * 0.025,
-            children: List.generate(
-                150,
-                (index) => Text(
-                      '${_date.year - index}',
-                      style: const TextStyle(color: Colors.white70),
-                    )),
-            onSelectedItemChanged: (item) {
-              setState(() {
-                year = _date.year - item;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    PreferredSizeWidget _appBar() {
+      return PreferredSize(
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.cake_outlined,
+                color: Colors.white,
+                size: 64,
+              ),
+            ],
+          ),
+        ),
+        preferredSize: Size(size.width, size.height * 0.15),
+      );
+    }
+
+    Widget _birthdayBox() {
+      var bDay =
+          DateFormat('M/d/yyyy').parse('${selectedMonth['number']}/$day/$year');
+      var age = _date.difference(bDay).inDays / 365;
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.01),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[800],
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
+          ),
+          height: size.height * 0.05,
+          width: size.width * 0.9,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Text(
+                  '${selectedMonth['name']} $day, $year',
+                  style: const TextStyle(
+                    color: Colors.white54,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: Text(
+                  "You are ${age.floor()} years old.",
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget _bodyContent() {
+      return Column(
+        children: [
+          const Text(
+            'Add Your Birthday',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      const BirthdayExplanation()));
+            },
+            child: const Text(
+              "This won't be part of your public profile. \n Why do I need to provide my birthday?",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          _birthdayBox(),
+          const Spacer(),
+          SizedBox(
+            width: size.width,
+            child: ElevatedButton(
+              onPressed: () {
+                AppStateWidget.of(context).updateUserData(
+                    {'birthday': '${selectedMonth['name']} $day, $year'});
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => const Username()));
+              },
+              child: const Text(
+                'Next',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    Widget _bottomNav() {
+      Size size = MediaQuery.of(context).size;
+      final List<Widget> _names = <Widget>[];
+      List<Widget> days = List.generate(
+          selectedMonth['days'],
+          (index) => Text(
+                '${index + 1}',
+                style: const TextStyle(color: Colors.white70),
+              ));
+      _months.forEach((k, v) {
+        _names.add(Text(
+          v['name'],
+          style: const TextStyle(color: Colors.white70),
+        ));
+      });
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: size.height * 0.25,
+            width: size.width * 0.25,
+            child: ListWheelScrollView(
+              onSelectedItemChanged: (item) {
+                setState(() {
+                  selectedMonth = _months[item];
+                  days = List.generate(
+                      selectedMonth['days'],
+                      (index) => Text(
+                            '${index + 1}',
+                            style: const TextStyle(color: Colors.white70),
+                          ));
+                });
+              },
+              physics: const FixedExtentScrollPhysics(),
+              magnification: 1.5,
+              useMagnifier: true,
+              diameterRatio: 0.75,
+              itemExtent: size.height * 0.025,
+              children: _names,
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.1,
+            child: const VerticalDivider(
+              color: Colors.white70,
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.25,
+            width: size.width * 0.25,
+            child: ListWheelScrollView(
+              physics: const FixedExtentScrollPhysics(),
+              magnification: 1.5,
+              useMagnifier: true,
+              diameterRatio: 0.75,
+              itemExtent: size.height * 0.025,
+              children: days,
+              onSelectedItemChanged: (item) {
+                setState(() {
+                  day = item + 1;
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.1,
+            child: const VerticalDivider(
+              color: Colors.white70,
+            ),
+          ),
+          SizedBox(
+            height: size.height * 0.25,
+            width: size.width * 0.25,
+            child: ListWheelScrollView(
+              physics: const FixedExtentScrollPhysics(),
+              magnification: 1.5,
+              useMagnifier: true,
+              diameterRatio: 0.75,
+              itemExtent: size.height * 0.025,
+              children: List.generate(
+                  150,
+                  (index) => Text(
+                        '${_date.year - index}',
+                        style: const TextStyle(color: Colors.white70),
+                      )),
+              onSelectedItemChanged: (item) {
+                setState(() {
+                  year = _date.year - item;
+                });
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
-      body: _bodyContent(context),
-      appBar: _appBar(context),
-      bottomNavigationBar: _bottomNav(context),
+      body: _bodyContent(),
+      appBar: _appBar(),
+      bottomNavigationBar: _bottomNav(),
     );
   }
 }

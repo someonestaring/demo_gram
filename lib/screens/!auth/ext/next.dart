@@ -27,39 +27,63 @@ class _NextState extends State<Next> {
     super.dispose();
   }
 
-  PreferredSizeWidget _appBar(context) {
-    final Size size = MediaQuery.of(context).size;
-    return PreferredSize(
-      child: const Center(
-        child: Text(
-          '',
-        ),
-      ),
-      preferredSize: Size(size.width, size.height * 0.015),
-    );
-  }
-
-  Widget _bodyContent(context) {
+  @override
+  Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              const Text(
-                'NAME AND PASSWORD',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
-                child: TextFormField(
-                  controller: _nameCont,
+
+    PreferredSizeWidget _appBar() {
+      return PreferredSize(
+        child: const Center(
+          child: Text(
+            '',
+          ),
+        ),
+        preferredSize: Size(size.width, size.height * 0.015),
+      );
+    }
+
+    Widget _bodyContent() {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const Text(
+                  'NAME AND PASSWORD',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
+                  child: TextFormField(
+                    controller: _nameCont,
+                    validator: (String? value) {
+                      if (value!.isEmpty || value.length < 3) {
+                        return 'Please enter at least 3 characters.';
+                      } else {
+                        setState(() {
+                          _validated = true;
+                        });
+                      }
+                    },
+                    style: const TextStyle(color: Colors.white70),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey[800],
+                      alignLabelWithHint: true,
+                      hintStyle: const TextStyle(color: Colors.white38),
+                      hintText: 'Full name',
+                    ),
+                  ),
+                ),
+                TextFormField(
+                  obscureText: true,
+                  controller: _passCont,
                   validator: (String? value) {
-                    if (value!.isEmpty || value.length < 3) {
-                      return 'Please enter at least 3 characters.';
+                    if (value!.isEmpty || value.length < 6) {
+                      return 'Please enter at least 6 characters.';
                     } else {
                       setState(() {
                         _validated = true;
@@ -72,141 +96,129 @@ class _NextState extends State<Next> {
                     fillColor: Colors.grey[800],
                     alignLabelWithHint: true,
                     hintStyle: const TextStyle(color: Colors.white38),
-                    hintText: 'Full name',
+                    hintText: 'Password',
                   ),
                 ),
-              ),
-              TextFormField(
-                obscureText: true,
-                controller: _passCont,
-                validator: (String? value) {
-                  if (value!.isEmpty || value.length < 6) {
-                    return 'Please enter at least 6 characters.';
-                  } else {
-                    setState(() {
-                      _validated = true;
-                    });
-                  }
-                },
-                style: const TextStyle(color: Colors.white70),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[800],
-                  alignLabelWithHint: true,
-                  hintStyle: const TextStyle(color: Colors.white38),
-                  hintText: 'Password',
-                ),
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _checkValue,
-                    onChanged: (bool? type) {
-                      setState(() {
-                        _checkValue = !_checkValue;
-                      });
-                    },
-                  ),
-                  const Text(
-                    'Remember password',
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState == null) {
-                          print("_formKey.currentState is null!");
-                        } else if (_formKey.currentState!.validate()) {
-                          if (_validated) {
-                            // AppStateWidget.of(context).updateUserData({
-                            //   'fullName': _nameCont.text,
-                            // });
-                            // AppStateWidget.of(context)
-                            //     .updateMiscData({'password': _passCont.text});
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const Birthday()));
-                          }
-                        }
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _checkValue,
+                      onChanged: (bool? type) {
+                        setState(() {
+                          _checkValue = !_checkValue;
+                        });
                       },
-                      child: const Text('Continue and Sync Contacts'),
                     ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text('Continue without Syncing Contacts'),
-              ),
-              const Spacer(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Your contacts will be periodically synced and stored on Demo_Gram servers to help you and others find friends, and to help us provide a better service. To remove contacts, go to Settings and disconnect.',
-                    style: TextStyle(color: Colors.white70),
-                    textAlign: TextAlign.center,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'Learn More.',
+                    const Text(
+                      'Remember password',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.white70,
                       ),
                     ),
+                  ],
+                ),
+                SizedBox(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      //needs to gain access to device.contacts, scrape numbers || emails, snapshot && friend request known users
+                      if (_formKey.currentState == null) {
+                        print("_formKey.currentState is null!");
+                      } else if (_formKey.currentState!.validate()) {
+                        if (_validated) {
+                          AppStateWidget.of(context).updateUserData({
+                            'fullName': _nameCont.text,
+                          });
+                          AppStateWidget.of(context)
+                              .updateMiscData({'password': _passCont.text});
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const Birthday()));
+                        }
+                      }
+                    },
+                    child: const Text('Continue and Sync Contacts'),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _bottomNav(context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Your contacts will be periodically synced and stored on Demo_Gram servers to help you and others find friends, and to help us provide a better service. To remove contacts, go to Settings and disconnect.',
-          style: TextStyle(color: Colors.white70),
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text(
-            'Learn More.',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_formKey.currentState == null) {
+                      print("_formKey.currentState is null!");
+                    } else if (_formKey.currentState!.validate()) {
+                      if (_validated) {
+                        AppStateWidget.of(context).updateUserData({
+                          'fullName': _nameCont.text,
+                        });
+                        AppStateWidget.of(context)
+                            .updateMiscData({'password': _passCont.text});
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const Birthday()));
+                      }
+                    }
+                  },
+                  child: const Text('Continue without Syncing Contacts'),
+                ),
+                const Spacer(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Your contacts will be periodically synced and stored on Demo_Gram servers to help you and others find friends, and to help us provide a better service. To remove contacts, go to Settings and disconnect.',
+                      style: TextStyle(color: Colors.white70),
+                      textAlign: TextAlign.center,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Learn More.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-      ],
-    );
-  }
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
+    Widget _bottomNav(context) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Your contacts will be periodically synced and stored on Demo_Gram servers to help you and others find friends, and to help us provide a better service. To remove contacts, go to Settings and disconnect.',
+            style: TextStyle(color: Colors.white70),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'Learn More.',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
-      appBar: _appBar(context),
+      appBar: _appBar(),
       backgroundColor: Colors.black,
       // bottomNavigationBar: _bottomNav(context),
-      body: _bodyContent(context),
+      body: _bodyContent(),
     );
   }
 }

@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Widget? _bodyContent() {
       switch (_bodyNav) {
         case 'home':
-          return const HomeBody();
+          return const Center(child: HomeBody());
         case 'activity':
           return const ActivityBody();
         case 'post':

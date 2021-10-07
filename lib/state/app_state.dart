@@ -1,24 +1,5 @@
 import 'package:flutter/material.dart';
 
-final Map initialState = {
-  "dateJoined": DateTime,
-  "deviceTokens": [],
-  "email": '',
-  "firstName": 'New',
-  "lastActive": DateTime,
-  "lastName": 'User',
-  'fullName': 'New User',
-  "notificationAccess": false,
-  "phoneNumber": '',
-  "profilePhoto": '',
-  "username": 'new_user',
-  'birthday': DateTime,
-};
-
-final PageController _pageCont = PageController(
-  initialPage: 0,
-);
-
 class AppState {
   AppState({
     required this.pageCont,
@@ -43,7 +24,7 @@ class AppState {
 }
 
 class AppStateScope extends InheritedWidget {
-  const AppStateScope(this.data, {Key? key, required Widget child})
+  AppStateScope(this.data, {Key? key, required Widget child})
       : super(key: key, child: child);
 
   final AppState data;
@@ -59,7 +40,7 @@ class AppStateScope extends InheritedWidget {
 }
 
 class AppStateWidget extends StatefulWidget {
-  const AppStateWidget({Key? key, required this.child}) : super(key: key);
+  AppStateWidget({required this.child});
   final Widget child;
 
   static AppStateWidgetState of(BuildContext context) {
@@ -70,32 +51,58 @@ class AppStateWidget extends StatefulWidget {
   AppStateWidgetState createState() => AppStateWidgetState();
 }
 
+final Map initialState = {
+  "dateJoined": DateTime,
+  "deviceTokens": [],
+  "email": '',
+  "firstName": 'New',
+  "lastActive": DateTime,
+  "lastName": 'User',
+  'fullName': 'New User',
+  "notificationAccess": false,
+  "phoneNumber": '',
+  "profilePhoto": '',
+  "username": 'new_user',
+  'birthday': DateTime,
+};
+
+final PageController _pageCont = PageController(
+  initialPage: 0,
+);
+
 class AppStateWidgetState extends State<AppStateWidget> {
-  final AppState _data = AppState(
+  AppState data = AppState(
     pageCont: _pageCont,
     userData: initialState,
     miscData: {},
   );
 
-  void updateUserData(Map newData) {
+  void updateUserData(Map<String, dynamic> newData) {
+    print('dataObj pre-setState -----> $newData');
     setState(() {
       newData.forEach((key, value) {
-        if (_data.userData.containsKey(key)) {
-          _data.userData.update(key, (value) => value);
+        if (data.userData.containsKey(key)) {
+          data.userData.update(key, (val) => value);
         } else {
-          _data.userData[key] = value;
+          data.userData[key] = value;
         }
       });
+    });
+  }
+
+  void updateOneKV(key, newVal) {
+    setState(() {
+      data.userData.update(key, (val) => newVal);
     });
   }
 
   void updateMiscData(Map newData) {
     setState(() {
       newData.forEach((key, value) {
-        if (_data.miscData.containsKey(key)) {
-          _data.miscData.update(key, (value) => value);
+        if (data.miscData.containsKey(key)) {
+          data.miscData.update(key, (val) => value);
         } else {
-          _data.miscData[key] = value;
+          data.miscData[key] = value;
         }
       });
     });
@@ -121,8 +128,7 @@ class AppStateWidgetState extends State<AppStateWidget> {
     );
   }
 
-  @override
   Widget build(BuildContext context) {
-    return AppStateScope(_data, child: widget.child);
+    return AppStateScope(data, child: widget.child);
   }
 }
