@@ -19,7 +19,7 @@ class _NewMessageState extends State<NewMessage> {
               Navigator.of(context).pop();
             },
             child: const Text(
-              'Nevermind',
+              'GoBackToDemo',
             ),
           ),
         ],

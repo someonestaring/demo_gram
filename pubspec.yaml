@@ -47,6 +47,8 @@ dependencies:
   geolocator: ^7.6.2
   geocoding: ^2.0.1
   intl: ^0.17.0
+  photo_view: ^0.13.0
+  media_gallery: ^0.1.5
 
 flutter_icons:
   android: true
@@ -78,7 +80,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/countries/country_list.json
-  #   - images/a_dot_ham.jpeg
+    - assets/images/Demo_Gram_Logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

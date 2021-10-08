@@ -25,7 +25,8 @@ class _SplashState extends State<Splash> {
     setState(() {
       user = _auth.currentUser;
     });
-    if (user != null) {
+    var checker = user;
+    if (checker != null) {
       String? _token = await _messaging.getToken();
       await _dB
           .collection('users')

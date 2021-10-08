@@ -10,7 +10,8 @@ class HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<HomeBody> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Center(
+        child: SingleChildScrollView(
       primary: true,
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
@@ -21,7 +22,7 @@ class _HomeBodyState extends State<HomeBody> {
           // StreamBuilder(builder: builder),
         ],
       ),
-    );
+    ));
   }
 }
 
