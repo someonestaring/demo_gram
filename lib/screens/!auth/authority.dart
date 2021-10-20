@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_gram/screens/!auth/ext/man_reg.dart';
 import 'package:demo_gram/screens/auth/utility.dart';
 import 'package:demo_gram/state/app_state.dart';
@@ -53,6 +54,8 @@ class Authority extends StatelessWidget {
 
   Widget _bodyContent(context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseFirestore _dB = FirebaseFirestore.instance;
+    Map _userData = AppStateScope.of(context).userData;
     Size size = MediaQuery.of(context).size;
     return Center(
       child: Column(
@@ -85,18 +88,29 @@ class Authority extends StatelessWidget {
                     FacebookAuthProvider.credential(
                         loginResult.accessToken!.token);
                 return _auth.signInWithCredential(fbAuthCred).then((value) {
+                  print('User Info ---------> ${value.user}');
+                  User? data = value.user;
+                  AppStateWidget.of(context).updateUserData({
+                    'email': data!.email,
+                    'profilePhoto': data.photoURL,
+                    'fullName': data.displayName,
+                    'firstName': data.displayName.toString().split(' ')[0],
+                    'lastName': data.displayName.toString().split(' ')[1],
+                    "lastActive": DateTime.now(),
+                    'username': data.displayName,
+                  });
+                  _dB.collection("users").doc(_auth.currentUser!.uid).set({
+                    'email': _userData['email'],
+                    'profilePhoto': _userData['profilePhoto'],
+                    'fullName': _userData['fullName'],
+                    'firstName': _userData['firstName'],
+                    'lastName': _userData['lastName'],
+                    'lastActive': DateTime.now(),
+                    'username': _userData['username'],
+                  });
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
                       builder: (BuildContext context) => const Utility()));
                 });
-                // await FacebookAuth.instance.login(permissions: [
-                //   'public_profile',
-                //   'email',
-                //   'user_link'
-                // ]).then((value) {
-                //   FacebookAuth.instance.getUserData().then((data) {
-                //     print(data);
-                //   });
-                // });
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -161,12 +175,3 @@ class Authority extends StatelessWidget {
     );
   }
 }
-
-                    // AppStateWidget.of(context).updateUserData({
-                    //   'email': data['email'],
-                    //   'profilePhoto': data['picture']['url'],
-                    //   'firstName': data['name'].toString().split(' ')[0],
-                    //   'lastName': data['name'].toString().split(' ')[1],
-                    //   "lastActive": DateTime.now(),
-                    //   'username': data['name'],
-                    // });
