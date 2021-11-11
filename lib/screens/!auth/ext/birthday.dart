@@ -26,7 +26,7 @@ class _BirthdayState extends State<Birthday> {
     9: {'name': 'October', 'short': 'Oct', 'number': 10, 'days': 31},
     10: {'name': 'November', 'short': 'Nov', 'number': 11, 'days': 30},
     11: {'name': 'December', 'short': 'Dec', 'number': 12, 'days': 31}
-  };
+  }; // could/should be stored static and imported
   int day = 1;
   int year = 2020;
   Map selectedMonth = {

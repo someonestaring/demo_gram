@@ -136,7 +136,8 @@ class _NextState extends State<Next> {
                         }
                       }
                     },
-                    child: const Text('Continue and Sync Contacts'),
+                    child: const Text(
+                        'Continue and Sync Contacts(not yet actually)'),
                   ),
                 ),
                 TextButton(
@@ -188,7 +189,7 @@ class _NextState extends State<Next> {
       );
     }
 
-    Widget _bottomNav(context) {
+    Widget _bottomNav() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -217,7 +218,7 @@ class _NextState extends State<Next> {
     return Scaffold(
       appBar: _appBar(),
       backgroundColor: Colors.black,
-      // bottomNavigationBar: _bottomNav(context),
+      // bottomNavigationBar: _bottomNav(), // TODO i think this was breaking due to overflow ??
       body: _bodyContent(),
     );
   }

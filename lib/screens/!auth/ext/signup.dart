@@ -14,6 +14,7 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  // TODO decipher between email&&phone signup and add phone stuff accordingly
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _dB = FirebaseFirestore.instance;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
