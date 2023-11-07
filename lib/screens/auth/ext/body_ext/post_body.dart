@@ -1,6 +1,6 @@
 import 'package:demo_gram/screens/auth/ext/post_ext/post_edit.dart';
 import 'package:flutter/material.dart';
-import 'package:media_gallery/media_gallery.dart';
+// import 'package:media_gallery/media_gallery.dart';
 
 class PostBody extends StatefulWidget {
   const PostBody({Key? key}) : super(key: key);
@@ -9,23 +9,23 @@ class PostBody extends StatefulWidget {
 }
 
 class _PostBodyState extends State<PostBody> {
-  dynamic _localMedia;
+  // dynamic _localMedia;
 
   @override
   void initState() {
     super.initState();
-    _mediaAccess();
+    // _mediaAccess();
   }
 
-  Future<void> _mediaAccess() async {
-    dynamic tempMedia = await MediaGallery.listMediaCollections(
-      mediaTypes: [MediaType.image, MediaType.video],
-    );
-    print(tempMedia);
-    setState(() {
-      _localMedia = tempMedia;
-    });
-  }
+  // Future<void> _mediaAccess() async {
+  //   dynamic tempMedia = await MediaGallery.listMediaCollections(
+  //     mediaTypes: [MediaType.image, MediaType.video],
+  //   );
+  //   print(tempMedia);
+  //   setState(() {
+  //     _localMedia = tempMedia;
+  //   });
+  // }
 
   Future<void> _cameraAccess() async {}
 

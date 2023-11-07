@@ -40,7 +40,7 @@ class AppStateScope extends InheritedWidget {
 }
 
 class AppStateWidget extends StatefulWidget {
-  AppStateWidget({required this.child});
+  const AppStateWidget({required this.child});
   final Widget child;
 
   static AppStateWidgetState of(BuildContext context) {

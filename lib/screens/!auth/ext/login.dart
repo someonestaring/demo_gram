@@ -40,10 +40,10 @@ class _LoginState extends State<Login> {
     _signInCont.addListener(_parseSignIn);
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
-        print('User is currently signed out!');
+        // print('User is currently signed out!');
       } else {
-        print('User is signed in!');
-        _navigate(context);
+        // print('User is signed in!');
+        // _navigate(context);
       }
     });
   }
@@ -146,7 +146,7 @@ class _LoginState extends State<Login> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState == null) {
-                          print("_formKey.currentState is null!");
+                          // print("_formKey.currentState is null!");
                         } else if (_formKey.currentState!.validate()) {
                           _logIn();
                         }
@@ -166,7 +166,7 @@ class _LoginState extends State<Login> {
                     ),
                     TextButton(
                       onPressed: () {
-                        print('Handle "Get help logging in."');
+                        // print('Handle "Get help logging in."');
                       },
                       child: const Text(
                         'Get help logging in.',
@@ -176,11 +176,11 @@ class _LoginState extends State<Login> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
+                const Padding(
+                  padding: EdgeInsets.only(top: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Expanded(
                         child: Divider(
                           color: Colors.white70,
@@ -209,7 +209,7 @@ class _LoginState extends State<Login> {
                       'user_link'
                     ]).then((value) {
                       FacebookAuth.instance.getUserData().then((data) {
-                        print(data);
+                        // print(data);
                         AppStateWidget.of(context).updateUserData({
                           'email': data['email'],
                           'profilePhoto': data['picture']['url'],
@@ -221,9 +221,9 @@ class _LoginState extends State<Login> {
                       });
                     });
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.facebook, color: Colors.white),
                       Text('Login with Facebook')
                     ],
@@ -329,7 +329,7 @@ class _LoginState extends State<Login> {
   }
 
   void _veriFailed(FirebaseAuthException e) {
-    print('Verification FAILURE due to: $e');
+    // print('Verification FAILURE due to: $e');
   }
 
   void _veriCompleted(PhoneAuthCredential credential) async {
@@ -345,15 +345,15 @@ class _LoginState extends State<Login> {
         AppStateWidget.of(context).updateUserData({
           'lastActive': DateTime.now(),
         });
-        print('User signed in, time to navigatge');
+        // print('User signed in, time to navigate');
       }
     } catch (e) {
-      print('_veriCompleted error: $e');
+      // print('_veriCompleted error: $e');
     }
   }
 
   void _autoRetrieval(String verificationId) {
-    print('code auto-retrieval timeout --> verificationId --> $verificationId');
+    // print('code auto-retrieval timeout --> verificationId --> $verificationId');
   }
 
   void _showSMS(context) {
@@ -402,7 +402,7 @@ class _LoginState extends State<Login> {
                     _smsCode = _smsCont.text;
                   });
                   _continuePhoneSignIn();
-                  print('this is the return string from _showSMS: $_smsCode');
+                  // print('this is the return string from _showSMS: $_smsCode');
                   Navigator.of(context).pop();
                   _smsCont.clear();
                   _signInCont.clear();
@@ -431,7 +431,7 @@ class _LoginState extends State<Login> {
         loading = false;
       });
     } catch (e) {
-      print('Error on _continueRestistration. $e');
+      // print('Error on _continueRegistration. $e');
     }
   }
 
@@ -453,9 +453,9 @@ class _LoginState extends State<Login> {
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        // print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        // print('Wrong password provided for that user.');
       }
     }
   }
@@ -475,9 +475,9 @@ class _LoginState extends State<Login> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        // print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        // print('Wrong password provided for that user.');
       }
     }
   }
@@ -489,7 +489,7 @@ class _LoginState extends State<Login> {
     try {
       switch (_parseSignIn()) {
         case 'number':
-          print('parses number');
+          // print('parses number');
           if (!verification) {
             await _auth.verifyPhoneNumber(
               timeout: const Duration(seconds: 60),
@@ -507,15 +507,15 @@ class _LoginState extends State<Login> {
           }
           return _continuePhoneSignIn();
         case 'username':
-          print('parses username');
+          // print('parses username');
           return _continueUsernameSignIn();
         //handle username stuff
         case 'email':
-          print('parses email');
+          // print('parses email');
           return _continueEmailSignIn();
       }
     } catch (e) {
-      print('Error on _login: $e');
+      // print('Error on _login: $e');
     }
   }
 
